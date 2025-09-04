@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: theme('colors.background.light');
+    --text: theme('colors.text.light');
+}
+
+.dark {
+    --background: theme('colors.background.dark');
+    --text: theme('colors.text.dark');
+}
+
+body {
+    @apply bg-[var(--background)] text-[var(--text)] transition-colors duration-200;
+}
