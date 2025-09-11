@@ -34,8 +34,111 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        // [O código de processamento do POST permanece igual]
-        // ... (mantido por questões de espaço)
+        // Dados básicos
+        $dataAvaliacao = $_POST['data_avaliacao'];
+        $peso = $_POST['peso'];
+        $altura = $_POST['altura'];
+        $imc = $peso / (($altura / 100) * ($altura / 100));
+
+        // Medidas corporais
+        $percentualGordura = $_POST['percentual_gordura'];
+        $massaMagra = $_POST['massa_magra'];
+        $massaGorda = $_POST['massa_gorda'];
+        $circunferenciaAbdominal = $_POST['circunferencia_abdominal'];
+        $circunferenciaQuadril = $_POST['circunferencia_quadril'];
+        $rcq = $circunferenciaAbdominal / $circunferenciaQuadril;
+
+        // Saúde
+        $pressaoArterial = $_POST['pressao_arterial'];
+        $frequenciaCardiaca = $_POST['frequencia_cardiaca'];
+
+        // Capacidades físicas
+        $flexibilidade = $_POST['flexibilidade'];
+        $resistencia = $_POST['resistencia'];
+        $forca = $_POST['forca'];
+
+        // Observações
+        $observacoes = $_POST['observacoes'];
+
+        // Upload de fotos
+        $fotoFrontal = uploadFoto('foto_frontal', 'evaluations');
+        $fotoLateral = uploadFoto('foto_lateral', 'evaluations');
+        $fotoPosterior = uploadFoto('foto_posterior', 'evaluations');
+
+        // Novos campos: Anamnese
+        $anamneseCompleta = $_POST['anamnese_completa'] ?? null;
+        $parq = $_POST['parq'] ?? null;
+        $aha = $_POST['aha'] ?? null;
+
+        // Novos campos: Perímetros
+        $perimetroBraco = $_POST['perimetro_braco'] ?? null;
+        $perimetroAntebraco = $_POST['perimetro_antebraco'] ?? null;
+        $perimetroCoxa = $_POST['perimetro_coxa'] ?? null;
+        $perimetroPanturrilha = $_POST['perimetro_panturrilha'] ?? null;
+
+        // Cálculo da massa muscular
+        $massaMuscular = null;
+        if ($peso && $percentualGordura) {
+            $massaMuscular = $peso * (1 - ($percentualGordura / 100));
+        }
+
+        // Inserir avaliação no banco de dados (query atualizada)
+        $stmt = $db->prepare("
+    INSERT INTO avaliacoes (
+        cliente_id, data_avaliacao, peso, altura, imc, percentual_gordura, massa_magra, massa_gorda,
+        circunferencia_abdominal, circunferencia_quadril, rcq, pressao_arterial, frequencia_cardiaca,
+        flexibilidade, resistencia, forca, foto_frontal, foto_lateral, foto_posterior, observacoes,
+        anamnese_completa, parq, aha, perimetro_braco, perimetro_antebraco, perimetro_coxa,
+        perimetro_panturrilha, massa_muscular, usuario_id
+    ) VALUES (
+        :cliente_id, :data_avaliacao, :peso, :altura, :imc, :percentual_gordura, :massa_magra, :massa_gorda,
+        :circunferencia_abdominal, :circunferencia_quadril, :rcq, :pressao_arterial, :frequencia_cardiaca,
+        :flexibilidade, :resistencia, :forca, :foto_frontal, :foto_lateral, :foto_posterior, :observacoes,
+        :anamnese_completa, :parq, :aha, :perimetro_braco, :perimetro_antebraco, :perimetro_coxa,
+        :perimetro_panturrilha, :massa_muscular, :usuario_id
+    )
+");
+
+        // Bind dos parâmetros
+        $stmt->bindValue(':cliente_id', $clienteId);
+        $stmt->bindValue(':data_avaliacao', $dataAvaliacao);
+        $stmt->bindValue(':peso', $peso);
+        $stmt->bindValue(':altura', $altura);
+        $stmt->bindValue(':imc', $imc);
+        $stmt->bindValue(':percentual_gordura', $percentualGordura);
+        $stmt->bindValue(':massa_magra', $massaMagra);
+        $stmt->bindValue(':massa_gorda', $massaGorda);
+        $stmt->bindValue(':circunferencia_abdominal', $circunferenciaAbdominal);
+        $stmt->bindValue(':circunferencia_quadril', $circunferenciaQuadril);
+        $stmt->bindValue(':rcq', $rcq);
+        $stmt->bindValue(':pressao_arterial', $pressaoArterial);
+        $stmt->bindValue(':frequencia_cardiaca', $frequenciaCardiaca);
+        $stmt->bindValue(':flexibilidade', $flexibilidade);
+        $stmt->bindValue(':resistencia', $resistencia);
+        $stmt->bindValue(':forca', $forca);
+        $stmt->bindValue(':foto_frontal', $fotoFrontal);
+        $stmt->bindValue(':foto_lateral', $fotoLateral);
+        $stmt->bindValue(':foto_posterior', $fotoPosterior);
+        $stmt->bindValue(':observacoes', $observacoes);
+        $stmt->bindValue(':usuario_id', getCurrentUserId());
+        $stmt->bindValue(':anamnese_completa', $anamneseCompleta);
+        $stmt->bindValue(':parq', $parq);
+        $stmt->bindValue(':aha', $aha);
+        $stmt->bindValue(':perimetro_braco', $perimetroBraco);
+        $stmt->bindValue(':perimetro_antebraco', $perimetroAntebraco);
+        $stmt->bindValue(':perimetro_coxa', $perimetroCoxa);
+        $stmt->bindValue(':perimetro_panturrilha', $perimetroPanturrilha);
+        $stmt->bindValue(':massa_muscular', $massaMuscular);
+
+        if ($stmt->execute()) {
+            $success = 'Avaliação registrada com sucesso!';
+            // Redirecionar para a página de detalhes da avaliação
+            $avaliacaoId = $db->lastInsertRowID();
+            header("Location: detalhes.php?id=$avaliacaoId");
+            exit();
+        } else {
+            $error = 'Erro ao registrar avaliação.';
+        }
     } catch (Exception $e) {
         $error = 'Erro: ' . $e->getMessage();
     }
@@ -43,8 +146,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function uploadFoto($fieldName, $subDir)
 {
-    // [A função uploadFoto permanece igual]
-    // ... (mantido por questões de espaço)
+    if (isset($_FILES[$fieldName]) && $_FILES[$fieldName]['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = "../../uploads/$subDir/";
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $ext = pathinfo($_FILES[$fieldName]['name'], PATHINFO_EXTENSION);
+        $fileName = uniqid() . '.' . $ext;
+        $filePath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES[$fieldName]['tmp_name'], $filePath)) {
+            return "uploads/$subDir/" . $fileName;
+        }
+    }
+    return null;
 }
 ?>
 
@@ -52,26 +168,27 @@ function uploadFoto($fieldName, $subDir)
 
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Registrar Avaliação Física</h1>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Registrar Avaliação Física</h1>
         <a href="../clientes/detalhes.php?id=<?php echo $clienteId; ?>"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center transition duration-150 ease-in-out">
+            class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded inline-flex items-center transition duration-150 ease-in-out">
             <i class="fas fa-arrow-left mr-2"></i> Voltar
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-4">
             <?php if ($cliente['foto']): ?>
             <img src="../../<?php echo htmlspecialchars($cliente['foto']); ?>" alt="Foto"
                 class="h-16 w-16 rounded-full object-cover shadow-sm">
             <?php else: ?>
-            <div class="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center shadow-sm">
+            <div class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shadow-sm">
                 <i class="fas fa-user text-gray-400 text-2xl"></i>
             </div>
             <?php endif; ?>
             <div>
-                <h2 class="text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($cliente['nome']); ?></h2>
-                <p class="text-gray-600 text-sm">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                    <?php echo htmlspecialchars($cliente['nome']); ?></h2>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
                     <?php
                     if (!empty($cliente['data_nascimento'])) {
                         $dataNasc = new DateTime($cliente['data_nascimento']);
@@ -91,14 +208,16 @@ function uploadFoto($fieldName, $subDir)
     </div>
 
     <?php if ($error): ?>
-    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
+    <div
+        class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4 flex items-center">
         <i class="fas fa-exclamation-circle mr-2"></i>
         <?php echo htmlspecialchars($error); ?>
     </div>
     <?php endif; ?>
 
     <?php if ($success): ?>
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4 flex items-center">
+    <div
+        class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4 flex items-center">
         <i class="fas fa-check-circle mr-2"></i>
         <?php echo htmlspecialchars($success); ?>
     </div>
@@ -106,39 +225,39 @@ function uploadFoto($fieldName, $subDir)
 
     <form method="POST" enctype="multipart/form-data" class="space-y-6" id="avaliacaoForm">
         <!-- Navegação por abas -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="flex overflow-x-auto -mb-px">
                     <button type="button" data-tab="dados-basicos"
-                        class="tab-button tab-active py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600">
+                        class="tab-button tab-active py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-blue-500 text-blue-600 dark:text-blue-400">
                         Dados Básicos
                     </button>
                     <button type="button" data-tab="medidas"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Medidas
                     </button>
                     <button type="button" data-tab="perimetros"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Perímetros
                     </button>
                     <button type="button" data-tab="anamnese"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Anamnese
                     </button>
                     <button type="button" data-tab="saude"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Saúde
                     </button>
                     <button type="button" data-tab="capacidades"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Capacidades
                     </button>
                     <button type="button" data-tab="fotos"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Fotos
                     </button>
                     <button type="button" data-tab="observacoes"
-                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        class="tab-button py-4 px-6 text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
                         Observações
                     </button>
                 </nav>
@@ -147,38 +266,42 @@ function uploadFoto($fieldName, $subDir)
             <div class="p-6">
                 <!-- Aba: Dados Básicos -->
                 <div id="tab-dados-basicos" class="tab-content active">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Dados Básicos</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Dados Básicos</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label for="data_avaliacao" class="block text-sm font-medium text-gray-700 mb-1">Data da
+                            <label for="data_avaliacao"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data da
                                 Avaliação *</label>
                             <input type="date" id="data_avaliacao" name="data_avaliacao" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 value="<?php echo date('Y-m-d'); ?>">
                         </div>
 
                         <div>
-                            <label for="peso" class="block text-sm font-medium text-gray-700 mb-1">Peso (kg) *</label>
+                            <label for="peso"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peso (kg)
+                                *</label>
                             <input type="number" id="peso" name="peso" step="0.1" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 oninput="calcularIMC()">
                         </div>
 
                         <div>
-                            <label for="altura" class="block text-sm font-medium text-gray-700 mb-1">Altura (cm)
+                            <label for="altura"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Altura (cm)
                                 *</label>
                             <input type="number" id="altura" name="altura" step="0.1" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 value="<?php echo htmlspecialchars($cliente['altura'] ?? ''); ?>"
                                 oninput="calcularIMC()">
                         </div>
                     </div>
 
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <p class="text-sm font-medium text-gray-600">IMC</p>
-                            <p id="imc_resultado" class="text-2xl font-bold text-blue-700">--</p>
-                            <p id="imc_classificacao" class="text-xs text-gray-500">Classificação</p>
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">IMC</p>
+                            <p id="imc_resultado" class="text-2xl font-bold text-blue-700 dark:text-blue-400">--</p>
+                            <p id="imc_classificacao" class="text-xs text-gray-500 dark:text-gray-400">Classificação</p>
                         </div>
                     </div>
 
@@ -193,60 +316,66 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Medidas Corporais -->
                 <div id="tab-medidas" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Medidas Corporais</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Medidas Corporais</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label for="percentual_gordura" class="block text-sm font-medium text-gray-700 mb-1">%
+                            <label for="percentual_gordura"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">%
                                 Gordura</label>
                             <input type="number" id="percentual_gordura" name="percentual_gordura" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
-                            <label for="massa_magra" class="block text-sm font-medium text-gray-700 mb-1">Massa Magra
+                            <label for="massa_magra"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Massa Magra
                                 (kg)</label>
                             <input type="number" id="massa_magra" name="massa_magra" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
-                            <label for="massa_gorda" class="block text-sm font-medium text-gray-700 mb-1">Massa Gorda
+                            <label for="massa_gorda"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Massa Gorda
                                 (kg)</label>
                             <input type="number" id="massa_gorda" name="massa_gorda" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
                             <label for="circunferencia_abdominal"
-                                class="block text-sm font-medium text-gray-700 mb-1">Circunferência Abdominal
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Circunferência
+                                Abdominal
                                 (cm)</label>
                             <input type="number" id="circunferencia_abdominal" name="circunferencia_abdominal"
                                 step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 oninput="calcularRCQ()">
                         </div>
 
                         <div>
                             <label for="circunferencia_quadril"
-                                class="block text-sm font-medium text-gray-700 mb-1">Circunferência Quadril (cm)</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Circunferência
+                                Quadril (cm)</label>
                             <input type="number" id="circunferencia_quadril" name="circunferencia_quadril" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 oninput="calcularRCQ()">
                         </div>
                     </div>
 
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <p class="text-sm font-medium text-gray-600">RCQ (Relação Cintura/Quadril)</p>
-                            <p id="rcq_resultado" class="text-2xl font-bold text-blue-700">--</p>
-                            <p id="rcq_classificacao" class="text-xs text-gray-500">Classificação</p>
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">RCQ (Relação
+                                Cintura/Quadril)</p>
+                            <p id="rcq_resultado" class="text-2xl font-bold text-blue-700 dark:text-blue-400">--</p>
+                            <p id="rcq_classificacao" class="text-xs text-gray-500 dark:text-gray-400">Classificação</p>
                         </div>
                     </div>
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -258,41 +387,41 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Perímetros -->
                 <div id="tab-perimetros" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Perímetros Corporais (cm)</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Perímetros Corporais (cm)</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="perimetro_braco"
-                                class="block text-sm font-medium text-gray-700 mb-1">Braço</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Braço</label>
                             <input type="number" id="perimetro_braco" name="perimetro_braco" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
                             <label for="perimetro_antebraco"
-                                class="block text-sm font-medium text-gray-700 mb-1">Antebraço</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Antebraço</label>
                             <input type="number" id="perimetro_antebraco" name="perimetro_antebraco" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
                             <label for="perimetro_coxa"
-                                class="block text-sm font-medium text-gray-700 mb-1">Coxa</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Coxa</label>
                             <input type="number" id="perimetro_coxa" name="perimetro_coxa" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
 
                         <div>
                             <label for="perimetro_panturrilha"
-                                class="block text-sm font-medium text-gray-700 mb-1">Panturrilha</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Panturrilha</label>
                             <input type="number" id="perimetro_panturrilha" name="perimetro_panturrilha" step="0.1"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
                     </div>
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -304,34 +433,36 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Anamnese -->
                 <div id="tab-anamnese" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Anamnese Completa</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Anamnese Completa</h2>
 
                     <div class="mb-4">
                         <label for="anamnese_completa"
-                            class="block text-sm font-medium text-gray-700 mb-1">Anamnese</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Anamnese</label>
                         <textarea id="anamnese_completa" name="anamnese_completa" rows="4"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"></textarea>
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                         <div>
-                            <label for="parq" class="block text-sm font-medium text-gray-700 mb-1">Questionário
+                            <label for="parq"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Questionário
                                 PAR-Q</label>
                             <textarea id="parq" name="parq" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"></textarea>
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"></textarea>
                         </div>
 
                         <div>
-                            <label for="aha" class="block text-sm font-medium text-gray-700 mb-1">Questionário
+                            <label for="aha"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Questionário
                                 AHA</label>
                             <textarea id="aha" name="aha" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"></textarea>
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"></textarea>
                         </div>
                     </div>
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -343,28 +474,30 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Saúde -->
                 <div id="tab-saude" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Saúde</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Saúde</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="pressao_arterial" class="block text-sm font-medium text-gray-700 mb-1">Pressão
+                            <label for="pressao_arterial"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pressão
                                 Arterial</label>
                             <input type="text" id="pressao_arterial" name="pressao_arterial"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"
                                 placeholder="Ex: 120/80">
                         </div>
 
                         <div>
                             <label for="frequencia_cardiaca"
-                                class="block text-sm font-medium text-gray-700 mb-1">Frequência Cardíaca (bpm)</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Frequência
+                                Cardíaca (bpm)</label>
                             <input type="number" id="frequencia_cardiaca" name="frequencia_cardiaca"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                         </div>
                     </div>
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -376,14 +509,14 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Capacidades Físicas -->
                 <div id="tab-capacidades" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Capacidades Físicas</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Capacidades Físicas</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="flexibilidade"
-                                class="block text-sm font-medium text-gray-700 mb-1">Flexibilidade</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Flexibilidade</label>
                             <select id="flexibilidade" name="flexibilidade"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione</option>
                                 <option value="ruim">Ruim</option>
                                 <option value="regular">Regular</option>
@@ -394,9 +527,9 @@ function uploadFoto($fieldName, $subDir)
 
                         <div>
                             <label for="resistencia"
-                                class="block text-sm font-medium text-gray-700 mb-1">Resistência</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Resistência</label>
                             <select id="resistencia" name="resistencia"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione</option>
                                 <option value="ruim">Ruim</option>
                                 <option value="regular">Regular</option>
@@ -406,9 +539,10 @@ function uploadFoto($fieldName, $subDir)
                         </div>
 
                         <div>
-                            <label for="forca" class="block text-sm font-medium text-gray-700 mb-1">Força</label>
+                            <label for="forca"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Força</label>
                             <select id="forca" name="forca"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione</option>
                                 <option value="ruim">Ruim</option>
                                 <option value="regular">Regular</option>
@@ -420,7 +554,7 @@ function uploadFoto($fieldName, $subDir)
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -432,18 +566,19 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Fotos -->
                 <div id="tab-fotos" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Fotos da Avaliação</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Fotos da Avaliação</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label for="foto_frontal" class="block text-sm font-medium text-gray-700 mb-1">Foto
+                            <label for="foto_frontal"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto
                                 Frontal</label>
                             <input type="file" id="foto_frontal" name="foto_frontal" accept="image/*" class="hidden"
                                 onchange="previewImage(this, 'previewFrontal')">
                             <label for="foto_frontal"
-                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out">
+                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out dark:hover:border-blue-500">
                                 <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-sm text-gray-600">Clique para adicionar</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Clique para adicionar</p>
                             </label>
                             <div id="previewFrontal" class="mt-2 hidden">
                                 <img src="" class="w-full h-40 object-cover rounded-lg shadow-sm">
@@ -451,14 +586,15 @@ function uploadFoto($fieldName, $subDir)
                         </div>
 
                         <div>
-                            <label for="foto_lateral" class="block text-sm font-medium text-gray-700 mb-1">Foto
+                            <label for="foto_lateral"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto
                                 Lateral</label>
                             <input type="file" id="foto_lateral" name="foto_lateral" accept="image/*" class="hidden"
                                 onchange="previewImage(this, 'previewLateral')">
                             <label for="foto_lateral"
-                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out">
+                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out dark:hover:border-blue-500">
                                 <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-sm text-gray-600">Clique para adicionar</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Clique para adicionar</p>
                             </label>
                             <div id="previewLateral" class="mt-2 hidden">
                                 <img src="" class="w-full h-40 object-cover rounded-lg shadow-sm">
@@ -466,14 +602,15 @@ function uploadFoto($fieldName, $subDir)
                         </div>
 
                         <div>
-                            <label for="foto_posterior" class="block text-sm font-medium text-gray-700 mb-1">Foto
+                            <label for="foto_posterior"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto
                                 Posterior</label>
                             <input type="file" id="foto_posterior" name="foto_posterior" accept="image/*" class="hidden"
                                 onchange="previewImage(this, 'previewPosterior')">
                             <label for="foto_posterior"
-                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out">
+                                class="block w-full px-4 py-10 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-pointer hover:border-blue-400 transition duration-150 ease-in-out dark:hover:border-blue-500">
                                 <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-sm text-gray-600">Clique para adicionar</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Clique para adicionar</p>
                             </label>
                             <div id="previewPosterior" class="mt-2 hidden">
                                 <img src="" class="w-full h-40 object-cover rounded-lg shadow-sm">
@@ -483,7 +620,7 @@ function uploadFoto($fieldName, $subDir)
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="button"
@@ -495,13 +632,13 @@ function uploadFoto($fieldName, $subDir)
 
                 <!-- Aba: Observações -->
                 <div id="tab-observacoes" class="tab-content hidden">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Observações</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Observações</h2>
                     <textarea id="observacoes" name="observacoes" rows="4"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"></textarea>
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out dark:bg-gray-700 dark:text-white"></textarea>
 
                     <div class="flex justify-between mt-6">
                         <button type="button"
-                            class="prev-tab bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                            class="prev-tab bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
                             <i class="fas fa-arrow-left mr-2"></i> Anterior
                         </button>
                         <button type="submit"

@@ -128,22 +128,31 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 <div class="container mx-auto px-4 py-8">
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Agendamentos</h1>
-            <p class="text-gray-600 mt-1">Gerencie os agendamentos dos seus clientes</p>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Agendamentos</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Gerencie os agendamentos dos seus clientes</p>
         </div>
-        <a href="criar.php"
-            class="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center transition-colors duration-200 shadow-md">
-            <i class="fas fa-plus-circle mr-2"></i> Novo Agendamento
-        </a>
+        <div class="flex items-center space-x-4 mt-4 md:mt-0">
+            <!-- Botão de tema móvel (opcional) -->
+            <button onclick="toggleDarkMode()"
+                class="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i id="theme-icon-mobile" class="fas fa-moon"></i>
+            </button>
+
+            <a href="criar.php"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center transition-colors duration-200 shadow-md">
+                <i class="fas fa-plus-circle mr-2"></i> Novo Agendamento
+            </a>
+        </div>
     </div>
 
     <!-- Filtros e Visualização -->
-    <div class="bg-white rounded-xl shadow-md p-5 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 mb-6">
         <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label for="status"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                 <select id="status" name="status"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                    class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white">
                     <option value="todos" <?= $filtroStatus === 'todos' ? 'selected' : '' ?>>Todos
                         (<?= $contagemStatus['todos'] ?>)</option>
                     <option value="pendente" <?= $filtroStatus === 'pendente' ? 'selected' : '' ?>>Pendentes
@@ -158,16 +167,17 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             </div>
 
             <div>
-                <label for="data" class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                <label for="data" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data</label>
                 <input type="text" id="data" name="data" value="<?= htmlspecialchars($filtroData) ?>"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 datepicker"
+                    class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white datepicker"
                     placeholder="DD/MM/AAAA">
             </div>
 
             <div>
-                <label for="view" class="block text-sm font-medium text-gray-700 mb-1">Visualização</label>
+                <label for="view"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Visualização</label>
                 <select id="view" name="view"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                    class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white">
                     <option value="tabela" <?= $visualizacao === 'tabela' ? 'selected' : '' ?>>Visualização em Tabela
                     </option>
                     <option value="cards" <?= $visualizacao === 'cards' ? 'selected' : '' ?>>Visualização em Cards
@@ -182,7 +192,7 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                 </button>
                 <?php if ($filtroStatus !== 'todos' || !empty($filtroData)): ?>
                 <a href="listar.php"
-                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-4 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
+                    class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2.5 px-4 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
                     <i class="fas fa-times mr-2"></i> Limpar
                 </a>
                 <?php endif; ?>
@@ -192,50 +202,51 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 
     <!-- Resumo Rápido -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
+        <!-- Cartões de status com classes para modo escuro -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
             <div class="flex items-center">
-                <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-lg">
-                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 p-3 rounded-lg">
+                    <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Pendentes</p>
-                    <p class="text-2xl font-bold text-gray-900"><?= $contagemStatus['pendente'] ?></p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pendentes</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $contagemStatus['pendente'] ?></p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
                     <i class="fas fa-check-circle text-blue-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Confirmados</p>
-                    <p class="text-2xl font-bold text-gray-900"><?= $contagemStatus['confirmado'] ?></p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Confirmados</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $contagemStatus['confirmado'] ?></p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border-l-4 border-green-500">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-green-100 p-3 rounded-lg">
                     <i class="fas fa-check-double text-green-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Realizados</p>
-                    <p class="text-2xl font-bold text-gray-900"><?= $contagemStatus['realizado'] ?></p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Realizados</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $contagemStatus['realizado'] ?></p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-red-500">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border-l-4 border-red-500">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-red-100 p-3 rounded-lg">
                     <i class="fas fa-times-circle text-red-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Cancelados</p>
-                    <p class="text-2xl font-bold text-gray-900"><?= $contagemStatus['cancelado'] ?></p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Cancelados</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $contagemStatus['cancelado'] ?></p>
                 </div>
             </div>
         </div>
@@ -243,42 +254,48 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 
     <!-- Lista de Agendamentos -->
     <?php if (empty($agendamentos)): ?>
-    <div class="bg-white rounded-xl shadow-md p-8 text-center">
-        <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
+        <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
             <i class="fas fa-calendar-day text-gray-400 text-3xl"></i>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhum agendamento encontrado</h3>
-        <p class="text-gray-500 mb-4">Tente ajustar os filtros ou criar um novo agendamento.</p>
-        <a href="criar.php" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhum agendamento encontrado</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-4">Tente ajustar os filtros ou criar um novo agendamento.</p>
+        <a href="criar.php"
+            class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
             <i class="fas fa-plus-circle mr-2"></i> Criar primeiro agendamento
         </a>
     </div>
     <?php else: ?>
     <?php if ($visualizacao === 'tabela'): ?>
-    <!-- Visualização em Tabela -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <!-- Visualização em Tabela com classes para modo escuro -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Cliente
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Data/Hora
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Tipo
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Status
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Ações
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <?php foreach ($agendamentos as $agendamento):
                                 $dataAgendamento = new DateTime($agendamento['data_agendamento']);
                                 $agora = new DateTime();
@@ -286,7 +303,7 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                                 $horasRestantes = $diferenca->h + ($diferenca->days * 24);
                                 $proximo = ($horasRestantes <= 24 && $horasRestantes > 0 && $agendamento['status'] === 'confirmado');
                             ?>
-                    <tr class="<?= $proximo ? 'bg-blue-50' : '' ?>">
+                    <tr class="<?= $proximo ? 'bg-blue-50 dark:bg-blue-900' : '' ?>">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <?php if ($agendamento['cliente_foto']): ?>
@@ -297,34 +314,35 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                                 </div>
                                 <?php else: ?>
                                 <div
-                                    class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                    class="flex-shrink-0 h-10 w-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
                                     <i class="fas fa-user text-gray-400"></i>
                                 </div>
                                 <?php endif; ?>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
                                         <?= htmlspecialchars($agendamento['cliente_nome']) ?>
                                         <?php if ($proximo): ?>
                                         <span
-                                            class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">Próximo</span>
+                                            class="ml-2 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-xs font-medium px-2 py-0.5 rounded-full">Próximo</span>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="text-sm text-gray-500">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
                                         <?= htmlspecialchars($agendamento['cliente_telefone']) ?>
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
                                 <?= formatarDataHoraBR($agendamento['data_agendamento']) ?>
                             </div>
-                            <div class="text-xs text-gray-500">
+                            <div class="text-xs text-gray-500 dark:text-white">
                                 <?= tempoDecorrido($agendamento['data_agendamento']) ?>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900"><?= htmlspecialchars($agendamento['tipo']) ?></div>
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <?= htmlspecialchars($agendamento['tipo']) ?></div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <?php
@@ -425,7 +443,7 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                     ];
                 ?>
         <div
-            class="bg-white rounded-xl shadow-md border-l-4 <?= $statusClasses[$agendamento['status']] ?> overflow-hidden">
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 <?= $statusClasses[$agendamento['status']] ?> overflow-hidden">
             <div class="p-5">
                 <div class="flex justify-between items-start mb-4">
                     <div>

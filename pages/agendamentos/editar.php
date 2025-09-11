@@ -131,36 +131,36 @@ function formatarDataHoraBR($dataHora)
 <div class="container mx-auto px-4 py-8">
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Editar Agendamento</h1>
-            <p class="text-gray-600 mt-1">Atualize as informações do agendamento</p>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Editar Agendamento</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Atualize as informações do agendamento</p>
         </div>
         <a href="listar.php"
-            class="mt-4 md:mt-0 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-5 rounded-lg inline-flex items-center transition-colors duration-200">
+            class="mt-4 md:mt-0 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center transition-colors duration-200">
             <i class="fas fa-arrow-left mr-2"></i> Voltar para Agendamentos
         </a>
     </div>
 
     <?php if ($error): ?>
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow-sm">
+    <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
                 <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-red-700"><?= htmlspecialchars($error) ?></p>
+                <p class="text-sm text-red-700 dark:text-red-300"><?= htmlspecialchars($error) ?></p>
             </div>
         </div>
     </div>
     <?php endif; ?>
 
     <?php if ($success): ?>
-    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow-sm">
+    <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
                 <i class="fas fa-check-circle text-green-400 text-xl"></i>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-green-700"><?= htmlspecialchars($success) ?></p>
+                <p class="text-sm text-green-700 dark:text-green-300"><?= htmlspecialchars($success) ?></p>
             </div>
         </div>
     </div>
@@ -169,8 +169,8 @@ function formatarDataHoraBR($dataHora)
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Informações atuais -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Informações Atuais</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Informações Atuais</h2>
 
                 <div class="flex items-center mb-4">
                     <?php if ($agendamento['cliente_foto']): ?>
@@ -180,37 +180,40 @@ function formatarDataHoraBR($dataHora)
                             alt="<?= htmlspecialchars($agendamento['cliente_nome']) ?>">
                     </div>
                     <?php else: ?>
-                    <div class="flex-shrink-0 h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <div
+                        class="flex-shrink-0 h-12 w-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-gray-400 text-xl"></i>
                     </div>
                     <?php endif; ?>
                     <div class="ml-3">
-                        <h3 class="text-lg font-medium text-gray-900">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
                             <?= htmlspecialchars($agendamento['cliente_nome']) ?></h3>
-                        <p class="text-sm text-gray-500"><?= htmlspecialchars($agendamento['cliente_telefone']) ?></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <?= htmlspecialchars($agendamento['cliente_telefone']) ?></p>
                     </div>
                 </div>
 
                 <div class="space-y-3">
                     <div>
-                        <p class="text-sm text-gray-600">Data e Hora</p>
-                        <p class="text-sm font-medium text-gray-900">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Data e Hora</p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
                             <?= formatarDataHoraBR($agendamento['data_agendamento']) ?></p>
                     </div>
 
                     <div>
-                        <p class="text-sm text-gray-600">Tipo</p>
-                        <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($agendamento['tipo']) ?></p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Tipo</p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            <?= htmlspecialchars($agendamento['tipo']) ?></p>
                     </div>
 
                     <div>
-                        <p class="text-sm text-gray-600">Status</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
                         <?php
                         $statusClasses = [
-                            'pendente' => 'bg-yellow-100 text-yellow-800',
-                            'confirmado' => 'bg-blue-100 text-blue-800',
-                            'realizado' => 'bg-green-100 text-green-800',
-                            'cancelado' => 'bg-red-100 text-red-800'
+                            'pendente' => 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+                            'confirmado' => 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+                            'realizado' => 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+                            'cancelado' => 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                         ];
                         $statusIcons = [
                             'pendente' => 'clock',
@@ -234,8 +237,8 @@ function formatarDataHoraBR($dataHora)
 
                     <?php if (!empty($agendamento['observacoes'])): ?>
                     <div>
-                        <p class="text-sm text-gray-600">Observações</p>
-                        <p class="text-sm font-medium text-gray-900">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Observações</p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
                             <?= htmlspecialchars($agendamento['observacoes']) ?></p>
                     </div>
                     <?php endif; ?>
@@ -245,19 +248,19 @@ function formatarDataHoraBR($dataHora)
 
         <!-- Formulário de edição -->
         <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">Editar Informações</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Editar Informações</h2>
 
                 <form method="POST" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="cliente_id"
-                                class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                 Cliente
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <select id="cliente_id" name="cliente_id" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione um cliente</option>
                                 <?php foreach ($clientes as $cliente): ?>
                                 <option value="<?= $cliente['id'] ?>"
@@ -269,12 +272,13 @@ function formatarDataHoraBR($dataHora)
                         </div>
 
                         <div>
-                            <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <label for="tipo"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                 Tipo de Agendamento
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <select id="tipo" name="tipo" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione o tipo</option>
                                 <option value="Avaliação Física"
                                     <?= ($agendamento['tipo'] === 'Avaliação Física' || (isset($_POST['tipo']) && $_POST['tipo'] === 'Avaliação Física')) ? 'selected' : '' ?>>
@@ -296,23 +300,24 @@ function formatarDataHoraBR($dataHora)
 
                         <div>
                             <label for="data_agendamento"
-                                class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                 Data e Hora
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <input type="text" id="data_agendamento" name="data_agendamento" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 datetimepicker"
+                                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white datetimepicker"
                                 value="<?= isset($_POST['data_agendamento']) ? htmlspecialchars($_POST['data_agendamento']) : htmlspecialchars($agendamento['data_agendamento']) ?>"
                                 placeholder="Selecione a data e hora">
                         </div>
 
                         <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <label for="status"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                 Status
                                 <span class="text-red-500 ml-1">*</span>
                             </label>
                             <select id="status" name="status" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white">
                                 <option value="">Selecione o status</option>
                                 <option value="pendente"
                                     <?= ($agendamento['status'] === 'pendente' || (isset($_POST['status']) && $_POST['status'] === 'pendente')) ? 'selected' : '' ?>>
@@ -331,22 +336,22 @@ function formatarDataHoraBR($dataHora)
 
                         <div class="md:col-span-2">
                             <label for="observacoes"
-                                class="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Observações</label>
                             <textarea id="observacoes" name="observacoes" rows="4"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 dark:bg-gray-700 dark:text-white"
                                 placeholder="Adicione observações relevantes sobre este agendamento"><?= isset($_POST['observacoes']) ? htmlspecialchars($_POST['observacoes']) : htmlspecialchars($agendamento['observacoes']) ?></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Opcional</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Opcional</p>
                         </div>
                     </div>
 
                     <div
-                        class="flex flex-col-reverse sm:flex-row justify-end space-y-4 space-y-reverse sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
+                        class="flex flex-col-reverse sm:flex-row justify-end space-y-4 space-y-reverse sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <a href="listar.php"
-                            class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-5 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
+                            class="w-full sm:w-auto bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
                             <i class="fas fa-times mr-2"></i> Cancelar
                         </a>
                         <button type="submit"
-                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center justify-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg inline-flex items-center justify-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
                             <i class="fas fa-save mr-2"></i> Salvar Alterações
                         </button>
                     </div>
@@ -361,24 +366,50 @@ function formatarDataHoraBR($dataHora)
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 <script>
 // Configuração do datetime picker
-flatpickr('.datetimepicker', {
-    enableTime: true,
-    dateFormat: 'd-m-Y H:i',
-    locale: 'pt',
-    time_24hr: true,
-    minuteIncrement: 15,
-    allowInput: true,
-    disableMobile: true, // Melhora a experiência em dispositivos móveis
-    position: 'auto',
-    placeholder: 'Selecione a data e hora',
-    onReady: function(selectedDates, dateStr, instance) {
-        // Adicionar ícone de calendário
-        instance.calendarContainer.classList.add('shadow-lg', 'rounded-lg');
-    }
-});
+function initFlatpickr() {
+    const isDark = document.documentElement.classList.contains('dark');
 
-// Validação básica do formulário
+    flatpickr('.datetimepicker', {
+        enableTime: true,
+        dateFormat: 'd-m-Y H:i',
+        locale: 'pt',
+        time_24hr: true,
+        minuteIncrement: 15,
+        allowInput: true,
+        disableMobile: true,
+        position: 'auto',
+        placeholder: 'Selecione a data e hora',
+        theme: isDark ? 'dark' : 'light',
+        onReady: function(selectedDates, dateStr, instance) {
+            instance.calendarContainer.classList.add('shadow-lg', 'rounded-lg');
+        }
+    });
+}
+
+// Inicializar flatpickr quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
+    initFlatpickr();
+
+    // Observar mudanças no tema para atualizar o flatpickr
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+                // Destruir e recriar os datepickers com o tema correto
+                document.querySelectorAll('.datetimepicker').forEach(function(el) {
+                    if (el._flatpickr) {
+                        el._flatpickr.destroy();
+                    }
+                });
+                initFlatpickr();
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true
+    });
+
+    // Validação básica do formulário
     const form = document.querySelector('form');
 
     form.addEventListener('submit', function(e) {

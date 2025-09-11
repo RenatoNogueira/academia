@@ -279,6 +279,3 @@ const imcChart = new Chart(imcCtx, {
     }
 });
 </script>
-</body>
-
-</html>
