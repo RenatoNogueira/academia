@@ -42,118 +42,148 @@ $result = $db->query("
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
     $agendamentosProximos[] = $row;
 }
+
+// Configurar localização para português
+setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+date_default_timezone_set('America/Sao_Paulo');
+
+// Formatar data em português
+$dataAtual = strftime('%A, %d de %B de %Y');
 ?>
+
 
 
 <?php include 'includes/header.php'; ?>
 
-<div class="container mx-auto px-4 py-8 mt-5">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200">Dashboard</h1>
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo ucfirst(utf8_encode($dataAtual)); ?></p>
+    </div>
 
     <!-- Cards de Estatísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 rounded-lg">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Card Clientes -->
-        <div class="card rounded-lg shadow bg-white p-6 transition-colors duration-200 dark:bg-gray-800">
+        <div class="card stat-card bg-white p-6 dark:bg-gray-800">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 dark:text-gray-400">Clientes Cadastrados</p>
-                    <h2 class="text-3xl font-bold dark:text-white"><?php echo $totalClientes; ?></h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Clientes Cadastrados</p>
+                    <h2 class="text-3xl font-bold dark:text-white mt-2"><?php echo $totalClientes; ?></h2>
+                    <div class="flex items-center mt-3">
+                        <span class="text-green-500 text-sm font-medium flex items-center">
+                            <i class="fas fa-arrow-up mr-1 text-xs"></i> 5.2%
+                        </span>
+                        <span class="text-gray-400 text-sm ml-2">desde o mês passado</span>
+                    </div>
                 </div>
-                <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-full">
                     <i class="fas fa-users text-blue-500 dark:text-blue-300 text-xl"></i>
                 </div>
             </div>
         </div>
 
         <!-- Card Avaliações -->
-        <div class="card rounded-lg shadow bg-white p-6 transition-colors duration-200 dark:bg-gray-800">
+        <div class="card stat-card bg-white p-6 dark:bg-gray-800">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 dark:text-gray-400">Avaliações Realizadas</p>
-                    <h2 class="text-3xl font-bold dark:text-white"><?php echo $totalAvaliacoes; ?></h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Avaliações Realizadas</p>
+                    <h2 class="text-3xl font-bold dark:text-white mt-2"><?php echo $totalAvaliacoes; ?></h2>
+                    <div class="flex items-center mt-3">
+                        <span class="text-green-500 text-sm font-medium flex items-center">
+                            <i class="fas fa-arrow-up mr-1 text-xs"></i> 12.7%
+                        </span>
+                        <span class="text-gray-400 text-sm ml-2">desde o mês passado</span>
+                    </div>
                 </div>
-                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
+                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-full">
                     <i class="fas fa-clipboard-check text-green-500 dark:text-green-300 text-xl"></i>
                 </div>
             </div>
         </div>
 
         <!-- Card Agendamentos -->
-        <div class="card rounded-lg shadow bg-white p-6 transition-colors duration-200 dark:bg-gray-800">
+        <div class="card stat-card bg-white p-6 dark:bg-gray-800">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 dark:text-gray-400">Agendamentos Pendentes</p>
-                    <h2 class="text-3xl font-bold dark:text-white"><?php echo $totalAgendamentos; ?></h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Agendamentos Pendentes</p>
+                    <h2 class="text-3xl font-bold dark:text-white mt-2"><?php echo $totalAgendamentos; ?></h2>
+                    <div class="flex items-center mt-3">
+                        <span class="text-red-500 text-sm font-medium flex items-center">
+                            <i class="fas fa-arrow-down mr-1 text-xs"></i> 2.3%
+                        </span>
+                        <span class="text-gray-400 text-sm ml-2">desde o mês passado</span>
+                    </div>
                 </div>
-                <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
-                    <i class="fas fa-calendar-alt text-yellow-500 dark:text-yellow-300 text-xl"></i>
+                <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-full">
+                    <i class="fas fa-calendar-alt text-amber-500 dark:text-amber-300 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Gráficos e Seções -->
-    <div class="grid bg-white rounded-lg grid-cols-1 lg:grid-cols-2 gap-8 mb-8 dark:bg-gray-800 p-5">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Gráfico de Evolução -->
-        <div class="card rounded-lg shadow p-6 transition-colors duration-200 dark:bg-gray-800">
-            <h2 class="text-xl font-semibold mb-4 dark:text-gray-200">Evolução de Peso (Últimos 6 meses)</h2>
-            <canvas id="evolucaoPesoChart" height="300"></canvas>
+        <div class="card bg-white p-6 dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold dark:text-dark section-title">Evolução de Peso</h2>
+                <div class="flex space-x-2">
+                    <button
+                        class="text-xs px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">6M</button>
+                    <button
+                        class="text-xs px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300">12M</button>
+                    <button
+                        class="text-xs px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">All</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="evolucaoPesoChart"></canvas>
+            </div>
         </div>
 
         <!-- Gráfico de IMC -->
-        <div class="card rounded-lg shadow p-6 transition-colors duration-200 dark:bg-gray-800">
-            <h2 class="text-xl font-semibold mb-4 dark:text-gray-200">Distribuição de IMC dos Clientes</h2>
-            <canvas id="imcChart" height="300"></canvas>
+        <div class="card bg-white p-6 dark:bg-gray-800">
+            <h2 class="text-xl font-semibold dark:text-dark mb-6 section-title">Distribuição de IMC</h2>
+            <div class="chart-container">
+                <canvas id="imcChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- Seção de Agendamentos Próximos -->
-    <div class="card rounded-lg shadow p-6 mb-8 transition-colors duration-200 bg-white dark:bg-gray-800 ">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold dark:text-gray-200">Próximos Agendamentos</h2>
-            <a href="pages/agendamentos/listar.php"
-                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Ver todos</a>
+    <div class="card bg-white p-6 mb-8 dark:bg-gray-800">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold dark:text-dark section-title">Próximos Agendamentos</h2>
+            <a href="pages/agendamentos/listar.php" class="btn btn-primary flex items-center text-sm">
+                Ver todos <i class="fas fa-arrow-right ml-2 text-xs"></i>
+            </a>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
+        <div class="overflow-x-auto table-container">
+            <table>
                 <thead>
                     <tr>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Cliente</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Data/Hora</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Tipo</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Status</th>
+                        <th>Cliente</th>
+                        <th>Data/Hora</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     <?php foreach ($agendamentosProximos as $agendamento): ?>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium dark:text-gray-200">
-                                <?php echo htmlspecialchars($agendamento['cliente_nome']); ?>
-                            </div>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                        <td class="font-medium dark:text-dark">
+                            <?php echo htmlspecialchars($agendamento['cliente_nome']); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo date('d/m/Y H:i', strtotime($agendamento['data_agendamento'])); ?>
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo date('d/m/Y H:i', strtotime($agendamento['data_agendamento'])); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo htmlspecialchars($agendamento['tipo']); ?>
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo htmlspecialchars($agendamento['tipo']); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td>
                             <span
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
+                                class="status-badge bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                                 <?php echo htmlspecialchars($agendamento['status']); ?>
                             </span>
                         </td>
@@ -165,61 +195,42 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
     </div>
 
     <!-- Seção de Avaliações Recentes -->
-    <div class="card rounded-lg shadow p-6 transition-colors duration-200 bg-white dark:bg-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold dark:text-gray-200">Avaliações Recentes</h2>
-            <a href="pages/avaliacoes/listar.php"
-                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Ver todas</a>
+    <div class="card bg-white p-6 dark:bg-gray-800">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold dark:text-dark section-title">Avaliações Recentes</h2>
+            <a href="pages/avaliacoes/listar.php" class="btn btn-primary flex items-center text-sm">
+                Ver todas <i class="fas fa-arrow-right ml-2 text-xs"></i>
+            </a>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
+        <div class="overflow-x-auto table-container">
+            <table>
                 <thead>
                     <tr>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Cliente</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Data</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Peso (kg)</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            IMC</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            % Gordura</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Peso (kg)</th>
+                        <th>IMC</th>
+                        <th>% Gordura</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     <?php foreach ($avaliacoesRecentes as $avaliacao): ?>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium dark:text-gray-200">
-                                <?php echo htmlspecialchars($avaliacao['cliente_nome']); ?>
-                            </div>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                        <td class="font-medium dark:text-dark">
+                            <?php echo htmlspecialchars($avaliacao['cliente_nome']); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo date('d/m/Y', strtotime($avaliacao['data_avaliacao'])); ?>
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo date('d/m/Y', strtotime($avaliacao['data_avaliacao'])); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo number_format($avaliacao['peso'], 2); ?>
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo number_format($avaliacao['peso'], 2); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo number_format($avaliacao['imc'], 1); ?>
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo number_format($avaliacao['imc'], 1); ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm dark:text-gray-300">
-                                <?php echo number_format($avaliacao['percentual_gordura'], 1); ?>%
-                            </div>
+                        <td class="text-gray-600 dark:text-gray-300">
+                            <?php echo number_format($avaliacao['percentual_gordura'], 1); ?>%
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -228,79 +239,100 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
         </div>
     </div>
 </div>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<?php
-require_once 'includes/footer.php';
-?>
-<script>
-// Gráfico de Evolução de Peso
-const evolucaoPesoCtx = document.getElementById('evolucaoPesoChart').getContext('2d');
-const evolucaoPesoChart = new Chart(evolucaoPesoCtx, {
-    type: 'line',
-    data: {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-        datasets: [{
-            label: 'Peso Médio (kg)',
-            data: [78.5, 77.8, 76.2, 75.5, 74.8, 73.9],
-            borderColor: 'rgba(59, 130, 246, 1)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.3,
-            fill: true
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: false
-            }
-        }
-    }
-});
 
-// Gráfico de IMC
-const imcCtx = document.getElementById('imcChart').getContext('2d');
-const imcChart = new Chart(imcCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Abaixo do peso', 'Peso normal', 'Sobrepeso', 'Obesidade'],
-        datasets: [{
-            data: [5, 15, 10, 5],
-            backgroundColor: [
-                'rgba(59, 130, 246, 0.7)',
-                'rgba(16, 185, 129, 0.7)',
-                'rgba(245, 158, 11, 0.7)',
-                'rgba(239, 68, 68, 0.7)'
-            ],
-            borderColor: [
-                'rgba(59, 130, 246, 1)',
-                'rgba(16, 185, 129, 1)',
-                'rgba(245, 158, 11, 1)',
-                'rgba(239, 68, 68, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
+<?php
+require_once 'includes/footer.php'
+?>
+
+
+<script>
+// Aguardar o carregamento completo do DOM
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de Evolução de Peso
+    const evolucaoPesoCtx = document.getElementById('evolucaoPesoChart').getContext('2d');
+    const evolucaoPesoChart = new Chart(evolucaoPesoCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Peso Médio (kg)',
+                data: [78.5, 77.8, 76.2, 75.5, 74.8, 73.9],
+                borderColor: '#4361ee',
+                backgroundColor: 'rgba(67, 97, 238, 0.05)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
             }
         }
-    }
+    });
+
+    // Gráfico de IMC
+    const imcCtx = document.getElementById('imcChart').getContext('2d');
+    const imcChart = new Chart(imcCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Abaixo do peso', 'Peso normal', 'Sobrepeso', 'Obesidade'],
+            datasets: [{
+                data: [5, 15, 10, 5],
+                backgroundColor: [
+                    'rgba(67, 97, 238, 0.8)',
+                    'rgba(76, 201, 240, 0.8)',
+                    'rgba(247, 37, 133, 0.8)',
+                    'rgba(230, 57, 70, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(67, 97, 238, 1)',
+                    'rgba(76, 201, 240, 1)',
+                    'rgba(247, 37, 133, 1)',
+                    'rgba(230, 57, 70, 1)'
+                ],
+                borderWidth: 1,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
 });
 </script>
-
-</body>
-
-</html>

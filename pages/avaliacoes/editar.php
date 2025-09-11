@@ -198,343 +198,669 @@ function uploadFoto($fieldName, $subDir)
 }
 ?>
 
-
 <?php include '../../includes/header.php'; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Editar Avaliação Física</h1>
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Editar Avaliação Física</h1>
         <a href="detalhes.php?id=<?php echo $avaliacaoId; ?>"
-            class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i> Voltar
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg inline-flex items-center transition-colors duration-200">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar para Detalhes
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <div class="flex items-center space-x-4">
+    <!-- Card de informações do cliente -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <?php if ($avaliacao['cliente_foto']): ?>
-            <img src="../../<?php echo htmlspecialchars($avaliacao['cliente_foto']); ?>" alt="Foto"
-                class="h-16 w-16 rounded-full object-cover">
+            <div class="relative">
+                <img src="../../<?php echo htmlspecialchars($avaliacao['cliente_foto']); ?>" alt="Foto do cliente"
+                    class="h-20 w-20 rounded-full object-cover border-4 border-white shadow">
+                <div class="absolute -bottom-1 -right-1 bg-blue-100 rounded-full p-1">
+                    <i class="fas fa-user text-blue-600 text-xs"></i>
+                </div>
+            </div>
             <?php else: ?>
-            <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                <i class="fas fa-user text-gray-400 text-2xl"></i>
+            <div
+                class="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow">
+                <i class="fas fa-user text-gray-400 text-3xl"></i>
             </div>
             <?php endif; ?>
-            <div>
-                <h2 class="text-xl font-semibold"><?php echo htmlspecialchars($avaliacao['cliente_nome']); ?></h2>
-                <p class="text-gray-600">
-                    <?php
-                    if (!empty($avaliacao['data_nascimento'])) {
+            <div class="text-center sm:text-left">
+                <h2 class="text-xl font-semibold text-gray-800">
+                    <?php echo htmlspecialchars($avaliacao['cliente_nome']); ?></h2>
+                <div class="flex flex-wrap justify-center sm:justify-start gap-3 mt-2">
+                    <?php if (!empty($avaliacao['data_nascimento'])):
                         $dataNasc = new DateTime($avaliacao['data_nascimento']);
                         $hoje = new DateTime();
-                        echo $hoje->diff($dataNasc)->y . ' anos';
-                    }
-                    if (!empty($avaliacao['sexo'])) {
-                        echo ' | ' . ucfirst($avaliacao['sexo']);
-                    }
-                    if (!empty($avaliacao['cliente_altura'])) {
-                        echo ' | ' . $avaliacao['cliente_altura'] . ' cm';
-                    }
+                        $idade = $hoje->diff($dataNasc)->y;
                     ?>
-                </p>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <i class="fas fa-birthday-cake mr-1"></i> <?php echo $idade; ?> anos
+                    </span>
+                    <?php endif; ?>
+
+                    <?php if (!empty($avaliacao['sexo'])): ?>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <i
+                            class="fas fa-<?php echo $avaliacao['sexo'] === 'masculino' ? 'male' : 'female'; ?> mr-1"></i>
+                        <?php echo ucfirst($avaliacao['sexo']); ?>
+                    </span>
+                    <?php endif; ?>
+
+                    <?php if (!empty($avaliacao['cliente_altura'])): ?>
+                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <i class="fas fa-ruler-vertical mr-1"></i> <?php echo $avaliacao['cliente_altura']; ?> cm
+                    </span>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
 
     <?php if ($error): ?>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <?php echo htmlspecialchars($error); ?>
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow-sm">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-700"><?php echo htmlspecialchars($error); ?></p>
+            </div>
+        </div>
     </div>
     <?php endif; ?>
 
     <?php if ($success): ?>
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-        <?php echo htmlspecialchars($success); ?>
+    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow-sm">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-green-700"><?php echo htmlspecialchars($success); ?></p>
+            </div>
+        </div>
     </div>
     <?php endif; ?>
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Dados Básicos</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label for="data_avaliacao" class="block text-sm font-medium text-gray-700">Data da Avaliação
-                        *</label>
-                    <input type="date" id="data_avaliacao" name="data_avaliacao" required
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['data_avaliacao']); ?>">
-                </div>
-
-                <div>
-                    <label for="peso" class="block text-sm font-medium text-gray-700">Peso (kg) *</label>
-                    <input type="number" id="peso" name="peso" step="0.1" required
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['peso']); ?>">
-                </div>
-
-                <div>
-                    <label for="altura" class="block text-sm font-medium text-gray-700">Altura (cm) *</label>
-                    <input type="number" id="altura" name="altura" step="0.1" required
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['altura']); ?>">
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Medidas Corporais</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label for="percentual_gordura" class="block text-sm font-medium text-gray-700">%
-                        Gordura</label>
-                    <input type="number" id="percentual_gordura" name="percentual_gordura" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['percentual_gordura']); ?>">
-                </div>
-
-                <div>
-                    <label for="massa_magra" class="block text-sm font-medium text-gray-700">Massa Magra
-                        (kg)</label>
-                    <input type="number" id="massa_magra" name="massa_magra" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['massa_magra']); ?>">
-                </div>
-
-                <div>
-                    <label for="massa_gorda" class="block text-sm font-medium text-gray-700">Massa Gorda
-                        (kg)</label>
-                    <input type="number" id="massa_gorda" name="massa_gorda" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['massa_gorda']); ?>">
-                </div>
-
-                <div>
-                    <label for="circunferencia_abdominal" class="block text-sm font-medium text-gray-700">Circunferência
-                        Abdominal (cm)</label>
-                    <input type="number" id="circunferencia_abdominal" name="circunferencia_abdominal" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['circunferencia_abdominal']); ?>">
-                </div>
-
-                <div>
-                    <label for="circunferencia_quadril" class="block text-sm font-medium text-gray-700">Circunferência
-                        Quadril (cm)</label>
-                    <input type="number" id="circunferencia_quadril" name="circunferencia_quadril" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['circunferencia_quadril']); ?>">
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção de Anamnese -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Anamnese Completa</h2>
-
-            <div class="mb-4">
-                <label for="anamnese_completa" class="block text-sm font-medium text-gray-700">Anamnese</label>
-                <textarea id="anamnese_completa" name="anamnese_completa" rows="4"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"><?php echo htmlspecialchars($avaliacao['anamnese_completa'] ?? ''); ?></textarea>
+    <form method="POST" enctype="multipart/form-data" class="space-y-6" id="avaliacaoForm">
+        <!-- Sistema de abas para organização -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="border-b border-gray-200">
+                <nav class="flex flex-col sm:flex-row -mb-px">
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-blue-500 text-blue-600"
+                        data-tab="dados-basicos">
+                        <i class="fas fa-info-circle mr-2"></i> Dados Básicos
+                    </button>
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        data-tab="medidas">
+                        <i class="fas fa-ruler-combined mr-2"></i> Medidas
+                    </button>
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        data-tab="anamnese">
+                        <i class="fas fa-file-medical mr-2"></i> Anamnese
+                    </button>
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        data-tab="saude">
+                        <i class="fas fa-heartbeat mr-2"></i> Saúde
+                    </button>
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        data-tab="fotos">
+                        <i class="fas fa-camera mr-2"></i> Fotos
+                    </button>
+                    <button type="button"
+                        class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        data-tab="observacoes">
+                        <i class="fas fa-sticky-note mr-2"></i> Observações
+                    </button>
+                </nav>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                <div>
-                    <label for="parq" class="block text-sm font-medium text-gray-700">Questionário PAR-Q</label>
-                    <textarea id="parq" name="parq" rows="4"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"><?php echo htmlspecialchars($avaliacao['parq'] ?? ''); ?></textarea>
-                </div>
+            <div class="p-6">
+                <!-- Aba: Dados Básicos -->
+                <div class="tab-content active" id="dados-basicos-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Dados Básicos da Avaliação</h2>
 
-                <div>
-                    <label for="aha" class="block text-sm font-medium text-gray-700">Questionário AHA</label>
-                    <textarea id="aha" name="aha" rows="4"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"><?php echo htmlspecialchars($avaliacao['aha'] ?? ''); ?></textarea>
-                </div>
-            </div>
-        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="data_avaliacao" class="block text-sm font-medium text-gray-700 mb-1">Data da
+                                Avaliação *</label>
+                            <input type="date" id="data_avaliacao" name="data_avaliacao" required
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['data_avaliacao']); ?>">
+                        </div>
 
-        <!-- Seção de Perímetros -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Perímetros Corporais (cm)</h2>
+                        <div>
+                            <label for="peso" class="block text-sm font-medium text-gray-700 mb-1">Peso (kg) *</label>
+                            <input type="number" id="peso" name="peso" step="0.1" required
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['peso']); ?>" oninput="calcularIMC()">
+                            <p class="text-xs text-gray-500 mt-1">Digite o peso em quilogramas</p>
+                        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="perimetro_braco" class="block text-sm font-medium text-gray-700">Braço</label>
-                    <input type="number" id="perimetro_braco" name="perimetro_braco" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['perimetro_braco'] ?? ''); ?>">
-                </div>
-
-                <div>
-                    <label for="perimetro_antebraco" class="block text-sm font-medium text-gray-700">Antebraço</label>
-                    <input type="number" id="perimetro_antebraco" name="perimetro_antebraco" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['perimetro_antebraco'] ?? ''); ?>">
-                </div>
-
-                <div>
-                    <label for="perimetro_coxa" class="block text-sm font-medium text-gray-700">Coxa</label>
-                    <input type="number" id="perimetro_coxa" name="perimetro_coxa" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['perimetro_coxa'] ?? ''); ?>">
-                </div>
-
-                <div>
-                    <label for="perimetro_panturrilha"
-                        class="block text-sm font-medium text-gray-700">Panturrilha</label>
-                    <input type="number" id="perimetro_panturrilha" name="perimetro_panturrilha" step="0.1"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['perimetro_panturrilha'] ?? ''); ?>">
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Saúde</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="pressao_arterial" class="block text-sm font-medium text-gray-700">Pressão
-                        Arterial</label>
-                    <input type="text" id="pressao_arterial" name="pressao_arterial"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ex: 120/80"
-                        value="<?php echo htmlspecialchars($avaliacao['pressao_arterial']); ?>">
-                </div>
-
-                <div>
-                    <label for="frequencia_cardiaca" class="block text-sm font-medium text-gray-700">Frequência
-                        Cardíaca (bpm)</label>
-                    <input type="number" id="frequencia_cardiaca" name="frequencia_cardiaca"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value="<?php echo htmlspecialchars($avaliacao['frequencia_cardiaca']); ?>">
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Capacidades Físicas</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label for="flexibilidade" class="block text-sm font-medium text-gray-700">Flexibilidade</label>
-                    <select id="flexibilidade" name="flexibilidade"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Selecione</option>
-                        <option value="ruim" <?php echo $avaliacao['flexibilidade'] === 'ruim' ? 'selected' : ''; ?>>
-                            Ruim</option>
-                        <option value="regular"
-                            <?php echo $avaliacao['flexibilidade'] === 'regular' ? 'selected' : ''; ?>>Regular
-                        </option>
-                        <option value="boa" <?php echo $avaliacao['flexibilidade'] === 'boa' ? 'selected' : ''; ?>>
-                            Boa</option>
-                        <option value="excelente"
-                            <?php echo $avaliacao['flexibilidade'] === 'excelente' ? 'selected' : ''; ?>>Excelente
-                        </option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="resistencia" class="block text-sm font-medium text-gray-700">Resistência</label>
-                    <select id="resistencia" name="resistencia"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Selecione</option>
-                        <option value="ruim" <?php echo $avaliacao['resistencia'] === 'ruim' ? 'selected' : ''; ?>>
-                            Ruim</option>
-                        <option value="regular"
-                            <?php echo $avaliacao['resistencia'] === 'regular' ? 'selected' : ''; ?>>Regular
-                        </option>
-                        <option value="boa" <?php echo $avaliacao['resistencia'] === 'boa' ? 'selected' : ''; ?>>Boa
-                        </option>
-                        <option value="excelente"
-                            <?php echo $avaliacao['resistencia'] === 'excelente' ? 'selected' : ''; ?>>Excelente
-                        </option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="forca" class="block text-sm font-medium text-gray-700">Força</label>
-                    <select id="forca" name="forca"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Selecione</option>
-                        <option value="ruim" <?php echo $avaliacao['forca'] === 'ruim' ? 'selected' : ''; ?>>Ruim
-                        </option>
-                        <option value="regular" <?php echo $avaliacao['forca'] === 'regular' ? 'selected' : ''; ?>>
-                            Regular</option>
-                        <option value="boa" <?php echo $avaliacao['forca'] === 'boa' ? 'selected' : ''; ?>>Boa
-                        </option>
-                        <option value="excelente" <?php echo $avaliacao['forca'] === 'excelente' ? 'selected' : ''; ?>>
-                            Excelente</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Fotos da Avaliação</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label for="foto_frontal" class="block text-sm font-medium text-gray-700">Foto Frontal</label>
-                    <?php if ($avaliacao['foto_frontal']): ?>
-                    <div class="mb-2">
-                        <img src="../../<?php echo htmlspecialchars($avaliacao['foto_frontal']); ?>" alt="Frontal"
-                            class="h-32 object-cover rounded-md">
-                        <p class="text-sm text-gray-500 mt-1">Foto atual</p>
+                        <div>
+                            <label for="altura" class="block text-sm font-medium text-gray-700 mb-1">Altura (cm)
+                                *</label>
+                            <input type="number" id="altura" name="altura" step="0.1" required
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['altura']); ?>" oninput="calcularIMC()">
+                            <p class="text-xs text-gray-500 mt-1">Digite a altura em centímetros</p>
+                        </div>
                     </div>
-                    <?php endif; ?>
-                    <input type="file" id="foto_frontal" name="foto_frontal" accept="image/*"
-                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h3 class="text-lg font-medium text-blue-800 mb-2">Resultados Calculados</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-blue-700">Índice de Massa Corporal (IMC):</p>
+                                <p class="text-2xl font-bold text-blue-900" id="imc-resultado">
+                                    <?php echo isset($avaliacao['imc']) ? number_format($avaliacao['imc'], 2) : '0.00'; ?>
+                                </p>
+                                <p class="text-xs text-blue-600" id="imc-classificacao">
+                                    <?php
+                                    if (isset($avaliacao['imc'])) {
+                                        if ($avaliacao['imc'] < 18.5) echo 'Abaixo do peso';
+                                        elseif ($avaliacao['imc'] < 25) echo 'Peso normal';
+                                        elseif ($avaliacao['imc'] < 30) echo 'Sobrepeso';
+                                        elseif ($avaliacao['imc'] < 35) echo 'Obesidade Grau I';
+                                        elseif ($avaliacao['imc'] < 40) echo 'Obesidade Grau II';
+                                        else echo 'Obesidade Grau III';
+                                    } else {
+                                        echo 'Classificação';
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="foto_lateral" class="block text-sm font-medium text-gray-700">Foto Lateral</label>
-                    <?php if ($avaliacao['foto_lateral']): ?>
-                    <div class="mb-2">
-                        <img src="../../<?php echo htmlspecialchars($avaliacao['foto_lateral']); ?>" alt="Lateral"
-                            class="h-32 object-cover rounded-md">
-                        <p class="text-sm text-gray-500 mt-1">Foto atual</p>
+                <!-- Aba: Medidas Corporais -->
+                <div class="tab-content hidden" id="medidas-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Medidas Corporais</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label for="percentual_gordura" class="block text-sm font-medium text-gray-700 mb-1">%
+                                Gordura Corporal</label>
+                            <div class="relative">
+                                <input type="number" id="percentual_gordura" name="percentual_gordura" step="0.1"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 pr-10"
+                                    value="<?php echo htmlspecialchars($avaliacao['percentual_gordura']); ?>"
+                                    oninput="calcularMassaMuscular()">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="massa_magra" class="block text-sm font-medium text-gray-700 mb-1">Massa Magra
+                                (kg)</label>
+                            <input type="number" id="massa_magra" name="massa_magra" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['massa_magra']); ?>">
+                        </div>
+
+                        <div>
+                            <label for="massa_gorda" class="block text-sm font-medium text-gray-700 mb-1">Massa Gorda
+                                (kg)</label>
+                            <input type="number" id="massa_gorda" name="massa_gorda" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['massa_gorda']); ?>">
+                        </div>
+
+                        <div>
+                            <label for="circunferencia_abdominal"
+                                class="block text-sm font-medium text-gray-700 mb-1">Circunferência Abdominal
+                                (cm)</label>
+                            <input type="number" id="circunferencia_abdominal" name="circunferencia_abdominal"
+                                step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['circunferencia_abdominal']); ?>"
+                                oninput="calcularRCQ()">
+                        </div>
+
+                        <div>
+                            <label for="circunferencia_quadril"
+                                class="block text-sm font-medium text-gray-700 mb-1">Circunferência Quadril (cm)</label>
+                            <input type="number" id="circunferencia_quadril" name="circunferencia_quadril" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['circunferencia_quadril']); ?>"
+                                oninput="calcularRCQ()">
+                        </div>
+
+                        <div>
+                            <label for="perimetro_braco" class="block text-sm font-medium text-gray-700 mb-1">Perímetro
+                                do Braço (cm)</label>
+                            <input type="number" id="perimetro_braco" name="perimetro_braco" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['perimetro_braco'] ?? ''); ?>">
+                        </div>
+
+                        <div>
+                            <label for="perimetro_antebraco"
+                                class="block text-sm font-medium text-gray-700 mb-1">Perímetro do Antebraço (cm)</label>
+                            <input type="number" id="perimetro_antebraco" name="perimetro_antebraco" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['perimetro_antebraco'] ?? ''); ?>">
+                        </div>
+
+                        <div>
+                            <label for="perimetro_coxa" class="block text-sm font-medium text-gray-700 mb-1">Perímetro
+                                da Coxa (cm)</label>
+                            <input type="number" id="perimetro_coxa" name="perimetro_coxa" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['perimetro_coxa'] ?? ''); ?>">
+                        </div>
+
+                        <div>
+                            <label for="perimetro_panturrilha"
+                                class="block text-sm font-medium text-gray-700 mb-1">Perímetro da Panturrilha
+                                (cm)</label>
+                            <input type="number" id="perimetro_panturrilha" name="perimetro_panturrilha" step="0.1"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['perimetro_panturrilha'] ?? ''); ?>">
+                        </div>
                     </div>
-                    <?php endif; ?>
-                    <input type="file" id="foto_lateral" name="foto_lateral" accept="image/*"
-                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+
+                    <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
+                        <h3 class="text-lg font-medium text-indigo-800 mb-2">Resultados Calculados</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-indigo-700">Relação Cintura-Quadril (RCQ):</p>
+                                <p class="text-2xl font-bold text-indigo-900" id="rcq-resultado">
+                                    <?php echo isset($avaliacao['rcq']) ? number_format($avaliacao['rcq'], 2) : '0.00'; ?>
+                                </p>
+                                <p class="text-xs text-indigo-600" id="rcq-classificacao">
+                                    <?php
+                                    if (isset($avaliacao['rcq'])) {
+                                        if ($avaliacao['sexo'] === 'masculino') {
+                                            if ($avaliacao['rcq'] < 0.90) echo 'Baixo risco';
+                                            elseif ($avaliacao['rcq'] < 0.99) echo 'Risco moderado';
+                                            else echo 'Alto risco';
+                                        } else {
+                                            if ($avaliacao['rcq'] < 0.80) echo 'Baixo risco';
+                                            elseif ($avaliacao['rcq'] < 0.84) echo 'Risco moderado';
+                                            else echo 'Alto risco';
+                                        }
+                                    } else {
+                                        echo 'Classificação';
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-indigo-700">Massa Muscular Estimada:</p>
+                                <p class="text-2xl font-bold text-indigo-900" id="massa-muscular-resultado">
+                                    <?php echo isset($avaliacao['massa_muscular']) ? number_format($avaliacao['massa_muscular'], 2) . ' kg' : '0.00 kg'; ?>
+                                </p>
+                                <p class="text-xs text-indigo-600">Calculado a partir do peso e % de gordura</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="foto_posterior" class="block text-sm font-medium text-gray-700">Foto
-                        Posterior</label>
-                    <?php if ($avaliacao['foto_posterior']): ?>
-                    <div class="mb-2">
-                        <img src="../../<?php echo htmlspecialchars($avaliacao['foto_posterior']); ?>" alt="Posterior"
-                            class="h-32 object-cover rounded-md">
-                        <p class="text-sm text-gray-500 mt-1">Foto atual</p>
+                <!-- Aba: Anamnese -->
+                <div class="tab-content hidden" id="anamnese-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Anamnese Completa</h2>
+
+                    <div class="mb-6">
+                        <label for="anamnese_completa"
+                            class="block text-sm font-medium text-gray-700 mb-1">Anamnese</label>
+                        <textarea id="anamnese_completa" name="anamnese_completa" rows="6"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            placeholder="Descreva a anamnese completa do cliente..."><?php echo htmlspecialchars($avaliacao['anamnese_completa'] ?? ''); ?></textarea>
                     </div>
-                    <?php endif; ?>
-                    <input type="file" id="foto_posterior" name="foto_posterior" accept="image/*"
-                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label for="parq" class="block text-sm font-medium text-gray-700 mb-1">Questionário
+                                PAR-Q</label>
+                            <textarea id="parq" name="parq" rows="6"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                placeholder="Registre as respostas do questionário PAR-Q..."><?php echo htmlspecialchars($avaliacao['parq'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div>
+                            <label for="aha" class="block text-sm font-medium text-gray-700 mb-1">Questionário
+                                AHA</label>
+                            <textarea id="aha" name="aha" rows="6"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                placeholder="Registre as respostas do questionário AHA..."><?php echo htmlspecialchars($avaliacao['aha'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba: Saúde -->
+                <div class="tab-content hidden" id="saude-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Indicadores de Saúde</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="pressao_arterial" class="block text-sm font-medium text-gray-700 mb-1">Pressão
+                                Arterial</label>
+                            <input type="text" id="pressao_arterial" name="pressao_arterial"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                placeholder="Ex: 120/80"
+                                value="<?php echo htmlspecialchars($avaliacao['pressao_arterial']); ?>">
+                            <p class="text-xs text-gray-500 mt-1">Formato: sistólica/diastólica (ex: 120/80)</p>
+                        </div>
+
+                        <div>
+                            <label for="frequencia_cardiaca"
+                                class="block text-sm font-medium text-gray-700 mb-1">Frequência Cardíaca (bpm)</label>
+                            <input type="number" id="frequencia_cardiaca" name="frequencia_cardiaca"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                value="<?php echo htmlspecialchars($avaliacao['frequencia_cardiaca']); ?>">
+                            <p class="text-xs text-gray-500 mt-1">Batimentos por minuto em repouso</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-800 mt-8 mb-4">Capacidades Físicas</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="flexibilidade"
+                                class="block text-sm font-medium text-gray-700 mb-1">Flexibilidade</label>
+                            <select id="flexibilidade" name="flexibilidade"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                <option value="">Selecione uma opção</option>
+                                <option value="ruim"
+                                    <?php echo $avaliacao['flexibilidade'] === 'ruim' ? 'selected' : ''; ?>>Ruim
+                                </option>
+                                <option value="regular"
+                                    <?php echo $avaliacao['flexibilidade'] === 'regular' ? 'selected' : ''; ?>>Regular
+                                </option>
+                                <option value="boa"
+                                    <?php echo $avaliacao['flexibilidade'] === 'boa' ? 'selected' : ''; ?>>Boa</option>
+                                <option value="excelente"
+                                    <?php echo $avaliacao['flexibilidade'] === 'excelente' ? 'selected' : ''; ?>>
+                                    Excelente</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="resistencia"
+                                class="block text-sm font-medium text-gray-700 mb-1">Resistência</label>
+                            <select id="resistencia" name="resistencia"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                <option value="">Selecione uma opção</option>
+                                <option value="ruim"
+                                    <?php echo $avaliacao['resistencia'] === 'ruim' ? 'selected' : ''; ?>>Ruim</option>
+                                <option value="regular"
+                                    <?php echo $avaliacao['resistencia'] === 'regular' ? 'selected' : ''; ?>>Regular
+                                </option>
+                                <option value="boa"
+                                    <?php echo $avaliacao['resistencia'] === 'boa' ? 'selected' : ''; ?>>Boa</option>
+                                <option value="excelente"
+                                    <?php echo $avaliacao['resistencia'] === 'excelente' ? 'selected' : ''; ?>>Excelente
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="forca" class="block text-sm font-medium text-gray-700 mb-1">Força</label>
+                            <select id="forca" name="forca"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                <option value="">Selecione uma opção</option>
+                                <option value="ruim" <?php echo $avaliacao['forca'] === 'ruim' ? 'selected' : ''; ?>>
+                                    Ruim</option>
+                                <option value="regular"
+                                    <?php echo $avaliacao['forca'] === 'regular' ? 'selected' : ''; ?>>Regular</option>
+                                <option value="boa" <?php echo $avaliacao['forca'] === 'boa' ? 'selected' : ''; ?>>Boa
+                                </option>
+                                <option value="excelente"
+                                    <?php echo $avaliacao['forca'] === 'excelente' ? 'selected' : ''; ?>>Excelente
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba: Fotos -->
+                <div class="tab-content hidden" id="fotos-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Fotos da Avaliação</h2>
+                    <p class="text-sm text-gray-600 mb-6">Faça upload de novas fotos ou visualize as atuais. As fotos
+                        ajudam a acompanhar a evolução do cliente.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <label for="foto_frontal" class="block text-sm font-medium text-gray-700 mb-2">Foto
+                                Frontal</label>
+                            <div class="relative mb-3">
+                                <?php if ($avaliacao['foto_frontal']): ?>
+                                <img src="../../<?php echo htmlspecialchars($avaliacao['foto_frontal']); ?>"
+                                    alt="Foto Frontal"
+                                    class="h-48 w-full object-cover rounded-lg shadow-md border border-gray-200"
+                                    id="preview-frontal">
+                                <?php else: ?>
+                                <div class="h-48 w-full bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
+                                    id="preview-frontal">
+                                    <div class="text-center">
+                                        <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
+                                        <p class="text-xs text-gray-500">Nenhuma imagem</p>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <label for="foto_frontal"
+                                class="cursor-pointer bg-white text-blue-600 border border-blue-600 rounded-lg py-2 px-4 inline-flex items-center justify-center text-sm font-medium hover:bg-blue-50 transition-colors duration-200">
+                                <i class="fas fa-upload mr-2"></i>
+                                <span>Alterar</span>
+                                <input type="file" id="foto_frontal" name="foto_frontal" accept="image/*" class="hidden"
+                                    onchange="previewImage(this, 'preview-frontal')">
+                            </label>
+                        </div>
+
+                        <div class="text-center">
+                            <label for="foto_lateral" class="block text-sm font-medium text-gray-700 mb-2">Foto
+                                Lateral</label>
+                            <div class="relative mb-3">
+                                <?php if ($avaliacao['foto_lateral']): ?>
+                                <img src="../../<?php echo htmlspecialchars($avaliacao['foto_lateral']); ?>"
+                                    alt="Foto Lateral"
+                                    class="h-48 w-full object-cover rounded-lg shadow-md border border-gray-200"
+                                    id="preview-lateral">
+                                <?php else: ?>
+                                <div class="h-48 w-full bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
+                                    id="preview-lateral">
+                                    <div class="text-center">
+                                        <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
+                                        <p class="text-xs text-gray-500">Nenhuma imagem</p>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <label for="foto_lateral"
+                                class="cursor-pointer bg-white text-blue-600 border border-blue-600 rounded-lg py-2 px-4 inline-flex items-center justify-center text-sm font-medium hover:bg-blue-50 transition-colors duration-200">
+                                <i class="fas fa-upload mr-2"></i>
+                                <span>Alterar</span>
+                                <input type="file" id="foto_lateral" name="foto_lateral" accept="image/*" class="hidden"
+                                    onchange="previewImage(this, 'preview-lateral')">
+                            </label>
+                        </div>
+
+                        <div class="text-center">
+                            <label for="foto_posterior" class="block text-sm font-medium text-gray-700 mb-2">Foto
+                                Posterior</label>
+                            <div class="relative mb-3">
+                                <?php if ($avaliacao['foto_posterior']): ?>
+                                <img src="../../<?php echo htmlspecialchars($avaliacao['foto_posterior']); ?>"
+                                    alt="Foto Posterior"
+                                    class="h-48 w-full object-cover rounded-lg shadow-md border border-gray-200"
+                                    id="preview-posterior">
+                                <?php else: ?>
+                                <div class="h-48 w-full bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
+                                    id="preview-posterior">
+                                    <div class="text-center">
+                                        <i class="fas fa-camera text-gray-400 text-2xl mb-2"></i>
+                                        <p class="text-xs text-gray-500">Nenhuma imagem</p>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <label for="foto_posterior"
+                                class="cursor-pointer bg-white text-blue-600 border border-blue-600 rounded-lg py-2 px-4 inline-flex items-center justify-center text-sm font-medium hover:bg-blue-50 transition-colors duration-200">
+                                <i class="fas fa-upload mr-2"></i>
+                                <span>Alterar</span>
+                                <input type="file" id="foto_posterior" name="foto_posterior" accept="image/*"
+                                    class="hidden" onchange="previewImage(this, 'preview-posterior')">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba: Observações -->
+                <div class="tab-content hidden" id="observacoes-content">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Observações e Considerações Finais</h2>
+                    <p class="text-sm text-gray-600 mb-4">Registre aqui observações relevantes, considerações finais e
+                        recomendações para o cliente.</p>
+
+                    <div class="mb-6">
+                        <label for="observacoes"
+                            class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                        <textarea id="observacoes" name="observacoes" rows="8"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                            placeholder="Descreva observações relevantes sobre a avaliação..."><?php echo htmlspecialchars($avaliacao['observacoes']); ?></textarea>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Observações</h2>
-            <textarea id="observacoes" name="observacoes" rows="4"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"><?php echo htmlspecialchars($avaliacao['observacoes']); ?></textarea>
-        </div>
-
-        <div class="flex justify-end space-x-3">
+        <div
+            class="flex flex-col-reverse sm:flex-row justify-between items-center space-y-4 space-y-reverse sm:space-y-0 sm:space-x-4 pt-6">
             <a href="detalhes.php?id=<?php echo $avaliacaoId; ?>"
-                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+                class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-6 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
                 <i class="fas fa-times mr-2"></i> Cancelar
             </a>
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg inline-flex items-center justify-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <i class="fas fa-save mr-2"></i> Salvar Alterações
             </button>
         </div>
     </form>
 </div>
-<?php include '../../includes/footer.php'; ?>
-</body>
 
-</html>
+<script>
+// Sistema de abas
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remover classe ativa de todos os botões
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('border-blue-500', 'text-blue-600');
+            btn.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        // Adicionar classe ativa ao botão clicado
+        button.classList.remove('border-transparent', 'text-gray-500');
+        button.classList.add('border-blue-500', 'text-blue-600');
+
+        // Esconder todos os conteúdos
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+            content.classList.remove('active');
+        });
+
+        // Mostrar o conteúdo correspondente
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(`${tabId}-content`).classList.remove('hidden');
+        document.getElementById(`${tabId}-content`).classList.add('active');
+    });
+});
+
+// Cálculo automático do IMC
+function calcularIMC() {
+    const peso = parseFloat(document.getElementById('peso').value) || 0;
+    const altura = parseFloat(document.getElementById('altura').value) || 0;
+
+    if (peso > 0 && altura > 0) {
+        const alturaMetros = altura / 100;
+        const imc = peso / (alturaMetros * alturaMetros);
+        document.getElementById('imc-resultado').textContent = imc.toFixed(2);
+
+        // Classificação do IMC
+        let classificacao = '';
+        if (imc < 18.5) classificacao = 'Abaixo do peso';
+        else if (imc < 25) classificacao = 'Peso normal';
+        else if (imc < 30) classificacao = 'Sobrepeso';
+        else if (imc < 35) classificacao = 'Obesidade Grau I';
+        else if (imc < 40) classificacao = 'Obesidade Grau II';
+        else classificacao = 'Obesidade Grau III';
+
+        document.getElementById('imc-classificacao').textContent = classificacao;
+    }
+}
+
+// Cálculo automático do RCQ
+function calcularRCQ() {
+    const abdominal = parseFloat(document.getElementById('circunferencia_abdominal').value) || 0;
+    const quadril = parseFloat(document.getElementById('circunferencia_quadril').value) || 0;
+
+    if (abdominal > 0 && quadril > 0) {
+        const rcq = abdominal / quadril;
+        document.getElementById('rcq-resultado').textContent = rcq.toFixed(2);
+
+        // Classificação do RCQ (simplificado)
+        // Nota: Em uma implementação real, precisaríamos saber o sexo do cliente
+        let classificacao = '';
+        if (rcq < 0.90) classificacao = 'Baixo risco';
+        else if (rcq < 0.99) classificacao = 'Risco moderado';
+        else classificacao = 'Alto risco';
+
+        document.getElementById('rcq-classificacao').textContent = classificacao;
+    }
+}
+
+// Cálculo automático da massa muscular
+function calcularMassaMuscular() {
+    const peso = parseFloat(document.getElementById('peso').value) || 0;
+    const percentualGordura = parseFloat(document.getElementById('percentual_gordura').value) || 0;
+
+    if (peso > 0 && percentualGordura > 0) {
+        const massaMuscular = peso * (1 - (percentualGordura / 100));
+        document.getElementById('massa-muscular-resultado').textContent = massaMuscular.toFixed(2) + ' kg';
+    }
+}
+
+// Preview de imagens antes do upload
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                // Se for uma div, substituir por uma imagem
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = "Preview";
+                img.className = "h-48 w-full object-cover rounded-lg shadow-md border border-gray-200";
+                img.id = previewId;
+                preview.parentNode.replaceChild(img, preview);
+            }
+        }
+
+        reader.readAsDataURL(file);
+    }
+}
+
+// Inicializar cálculos ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    calcularIMC();
+    calcularRCQ();
+    calcularMassaMuscular();
+});
+</script>
+
+<?php include '../../includes/footer.php'; ?>
