@@ -1,0 +1,44 @@
+# Ativar rewrite engine
+RewriteEngine On
+
+# Redirecionar todas as requisições para index.php (exceto arquivos existentes)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Proteger arquivos sensíveis
+<Files ~ "\.(env|ini|log|sh|sql|tpl|txt|xml)$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Proteger arquivos de configuração e includes
+<Files ~ "(config|auth|db)\.php$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevenir acesso a arquivos .htaccess
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevenir listagem de diretórios
+Options -Indexes
+
+# Proteção contra XSS
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header always append X-Frame-Options SAMEORIGIN
+    Header set X-Content-Type-Options nosniff
+</IfModule>
+
+# Redirecionar tentativas de acesso direto a arquivos PHP para index.php
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(includes|views|controllers|models)/.*\.php\ HTTP/
+RewriteRule ^(.*)\.php$ /DRM/index.php [R=301,L]
+
+# Proteger pasta includes
+<IfModule mod_alias.c>
+    RedirectMatch 403 ^/DRM/includes/
+</IfModule>
