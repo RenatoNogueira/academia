@@ -191,10 +191,10 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                     <i class="fas fa-filter mr-2"></i> Filtrar
                 </button>
                 <?php if ($filtroStatus !== 'todos' || !empty($filtroData)): ?>
-                <a href="listar.php"
-                    class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2.5 px-4 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
-                    <i class="fas fa-times mr-2"></i> Limpar
-                </a>
+                    <a href="listar.php"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2.5 px-4 rounded-lg inline-flex items-center justify-center transition-colors duration-200">
+                        <i class="fas fa-times mr-2"></i> Limpar
+                    </a>
                 <?php endif; ?>
             </div>
         </form>
@@ -254,98 +254,98 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 
     <!-- Lista de Agendamentos -->
     <?php if (empty($agendamentos)): ?>
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
-        <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-            <i class="fas fa-calendar-day text-gray-400 text-3xl"></i>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
+            <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-calendar-day text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhum agendamento encontrado</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">Tente ajustar os filtros ou criar um novo agendamento.</p>
+            <a href="criar.php"
+                class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
+                <i class="fas fa-plus-circle mr-2"></i> Criar primeiro agendamento
+            </a>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhum agendamento encontrado</h3>
-        <p class="text-gray-500 dark:text-gray-400 mb-4">Tente ajustar os filtros ou criar um novo agendamento.</p>
-        <a href="criar.php"
-            class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
-            <i class="fas fa-plus-circle mr-2"></i> Criar primeiro agendamento
-        </a>
-    </div>
     <?php else: ?>
-    <?php if ($visualizacao === 'tabela'): ?>
-    <!-- Visualização em Tabela com classes para modo escuro -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Cliente
-                        </th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Data/Hora
-                        </th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Tipo
-                        </th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Status
-                        </th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Ações
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <?php foreach ($agendamentos as $agendamento):
+        <?php if ($visualizacao === 'tabela'): ?>
+            <!-- Visualização em Tabela com classes para modo escuro -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Cliente
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Data/Hora
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Tipo
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <?php foreach ($agendamentos as $agendamento):
                                 $dataAgendamento = new DateTime($agendamento['data_agendamento']);
                                 $agora = new DateTime();
                                 $diferenca = $agora->diff($dataAgendamento);
                                 $horasRestantes = $diferenca->h + ($diferenca->days * 24);
                                 $proximo = ($horasRestantes <= 24 && $horasRestantes > 0 && $agendamento['status'] === 'confirmado');
                             ?>
-                    <tr class="<?= $proximo ? 'bg-blue-50 dark:bg-blue-900' : '' ?>">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <?php if ($agendamento['cliente_foto']): ?>
-                                <div class="flex-shrink-0 h-10 w-10">
-                                    <img class="h-10 w-10 rounded-full object-cover"
-                                        src="../../<?= htmlspecialchars($agendamento['cliente_foto']) ?>"
-                                        alt="<?= htmlspecialchars($agendamento['cliente_nome']) ?>">
-                                </div>
-                                <?php else: ?>
-                                <div
-                                    class="flex-shrink-0 h-10 w-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-400"></i>
-                                </div>
-                                <?php endif; ?>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        <?= htmlspecialchars($agendamento['cliente_nome']) ?>
-                                        <?php if ($proximo): ?>
-                                        <span
-                                            class="ml-2 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-xs font-medium px-2 py-0.5 rounded-full">Próximo</span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">
-                                        <?= htmlspecialchars($agendamento['cliente_telefone']) ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                <?= formatarDataHoraBR($agendamento['data_agendamento']) ?>
-                            </div>
-                            <div class="text-xs text-gray-500 dark:text-white">
-                                <?= tempoDecorrido($agendamento['data_agendamento']) ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                <?= htmlspecialchars($agendamento['tipo']) ?></div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <?php
+                                <tr class="<?= $proximo ? 'bg-blue-50 dark:bg-blue-900' : '' ?>">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <?php if ($agendamento['cliente_foto']): ?>
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full object-cover"
+                                                        src="../../<?= htmlspecialchars($agendamento['cliente_foto']) ?>"
+                                                        alt="<?= htmlspecialchars($agendamento['cliente_nome']) ?>">
+                                                </div>
+                                            <?php else: ?>
+                                                <div
+                                                    class="flex-shrink-0 h-10 w-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-400"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    <?= htmlspecialchars($agendamento['cliente_nome']) ?>
+                                                    <?php if ($proximo): ?>
+                                                        <span
+                                                            class="ml-2 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-xs font-medium px-2 py-0.5 rounded-full">Próximo</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                    <?= htmlspecialchars($agendamento['cliente_telefone']) ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            <?= formatarDataHoraBR($agendamento['data_agendamento']) ?>
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-white">
+                                            <?= tempoDecorrido($agendamento['data_agendamento']) ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-white">
+                                            <?= htmlspecialchars($agendamento['tipo']) ?></div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?php
                                         $statusClasses = [
                                             'pendente' => 'bg-yellow-100 text-yellow-800',
                                             'confirmado' => 'bg-blue-100 text-blue-800',
@@ -365,63 +365,63 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                                             'cancelado' => 'Cancelado'
                                         ];
                                         ?>
-                            <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $statusClasses[$agendamento['status']] ?>">
-                                <i class="fas fa-<?= $statusIcons[$agendamento['status']] ?> mr-1"></i>
-                                <?= $statusText[$agendamento['status']] ?>
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <?php if ($agendamento['status'] === 'pendente'): ?>
-                                <a href="confirmar.php?id=<?= $agendamento['id'] ?>"
-                                    class="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
-                                    title="Confirmar">
-                                    <i class="fas fa-check-circle"></i>
-                                </a>
-                                <?php endif; ?>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $statusClasses[$agendamento['status']] ?>">
+                                            <i class="fas fa-<?= $statusIcons[$agendamento['status']] ?> mr-1"></i>
+                                            <?= $statusText[$agendamento['status']] ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <?php if ($agendamento['status'] === 'pendente'): ?>
+                                                <a href="confirmar.php?id=<?= $agendamento['id'] ?>"
+                                                    class="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                                                    title="Confirmar">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </a>
+                                            <?php endif; ?>
 
-                                <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
-                                <a href="cancelar.php?id=<?= $agendamento['id'] ?>"
-                                    class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-200"
-                                    title="Cancelar"
-                                    onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
-                                    <i class="fas fa-times-circle"></i>
-                                </a>
-                                <?php endif; ?>
+                                            <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
+                                                <a href="cancelar.php?id=<?= $agendamento['id'] ?>"
+                                                    class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-200"
+                                                    title="Cancelar"
+                                                    onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </a>
+                                            <?php endif; ?>
 
-                                <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
-                                <a href="realizar.php?id=<?= $agendamento['id'] ?>"
-                                    class="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50 transition-colors duration-200"
-                                    title="Marcar como realizado">
-                                    <i class="fas fa-check-double"></i>
-                                </a>
-                                <?php endif; ?>
+                                            <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
+                                                <a href="realizar.php?id=<?= $agendamento['id'] ?>"
+                                                    class="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50 transition-colors duration-200"
+                                                    title="Marcar como realizado">
+                                                    <i class="fas fa-check-double"></i>
+                                                </a>
+                                            <?php endif; ?>
 
-                                <a href="editar.php?id=<?= $agendamento['id'] ?>"
-                                    class="text-yellow-600 hover:text-yellow-900 p-1 rounded-md hover:bg-yellow-50 transition-colors duration-200"
-                                    title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                            <a href="editar.php?id=<?= $agendamento['id'] ?>"
+                                                class="text-yellow-600 hover:text-yellow-900 p-1 rounded-md hover:bg-yellow-50 transition-colors duration-200"
+                                                title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
 
-                                <a href="excluir.php?id=<?= $agendamento['id'] ?>"
-                                    class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-200"
-                                    title="Excluir"
-                                    onclick="return confirm('Tem certeza que deseja excluir este agendamento?')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <?php else: ?>
-    <!-- Visualização em Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <?php foreach ($agendamentos as $agendamento):
+                                            <a href="excluir.php?id=<?= $agendamento['id'] ?>"
+                                                class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-200"
+                                                title="Excluir"
+                                                onclick="return confirm('Tem certeza que deseja excluir este agendamento?')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php else: ?>
+            <!-- Visualização em Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <?php foreach ($agendamentos as $agendamento):
                     $dataAgendamento = new DateTime($agendamento['data_agendamento']);
                     $agora = new DateTime();
                     $diferenca = $agora->diff($dataAgendamento);
@@ -442,102 +442,102 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                         'cancelado' => 'red'
                     ];
                 ?>
-        <div
-            class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 <?= $statusClasses[$agendamento['status']] ?> overflow-hidden">
-            <div class="p-5">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-<?= $statusColors[$agendamento['status']] ?>-100 text-<?= $statusColors[$agendamento['status']] ?>-800">
-                            <i class="fas fa-<?= $statusIcons[$agendamento['status']] ?> mr-1"></i>
-                            <?= $statusText[$agendamento['status']] ?>
-                        </span>
-                        <?php if ($proximo): ?>
-                        <span
-                            class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <i class="fas fa-bell mr-1"></i> Próximo
-                        </span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="text-2xl font-bold text-gray-300"><?= $dataAgendamento->format('d') ?></div>
-                </div>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 <?= $statusClasses[$agendamento['status']] ?> overflow-hidden">
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-<?= $statusColors[$agendamento['status']] ?>-100 text-<?= $statusColors[$agendamento['status']] ?>-800">
+                                        <i class="fas fa-<?= $statusIcons[$agendamento['status']] ?> mr-1"></i>
+                                        <?= $statusText[$agendamento['status']] ?>
+                                    </span>
+                                    <?php if ($proximo): ?>
+                                        <span
+                                            class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-bell mr-1"></i> Próximo
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="text-2xl font-bold text-gray-300"><?= $dataAgendamento->format('d') ?></div>
+                            </div>
 
-                <div class="flex items-center mb-4">
-                    <?php if ($agendamento['cliente_foto']): ?>
-                    <div class="flex-shrink-0 h-12 w-12">
-                        <img class="h-12 w-12 rounded-full object-cover"
-                            src="../../<?= htmlspecialchars($agendamento['cliente_foto']) ?>"
-                            alt="<?= htmlspecialchars($agendamento['cliente_nome']) ?>">
-                    </div>
-                    <?php else: ?>
-                    <div class="flex-shrink-0 h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-gray-400 text-xl"></i>
-                    </div>
-                    <?php endif; ?>
-                    <div class="ml-3">
-                        <h3 class="text-lg font-medium text-gray-900">
-                            <?= htmlspecialchars($agendamento['cliente_nome']) ?></h3>
-                        <p class="text-sm text-gray-500"><?= htmlspecialchars($agendamento['cliente_telefone']) ?></p>
-                    </div>
-                </div>
+                            <div class="flex items-center mb-4">
+                                <?php if ($agendamento['cliente_foto']): ?>
+                                    <div class="flex-shrink-0 h-12 w-12">
+                                        <img class="h-12 w-12 rounded-full object-cover"
+                                            src="../../<?= htmlspecialchars($agendamento['cliente_foto']) ?>"
+                                            alt="<?= htmlspecialchars($agendamento['cliente_nome']) ?>">
+                                    </div>
+                                <?php else: ?>
+                                    <div class="flex-shrink-0 h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-400 text-xl"></i>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="ml-3">
+                                    <h3 class="text-lg font-medium text-gray-900">
+                                        <?= htmlspecialchars($agendamento['cliente_nome']) ?></h3>
+                                    <p class="text-sm text-gray-500"><?= htmlspecialchars($agendamento['cliente_telefone']) ?></p>
+                                </div>
+                            </div>
 
-                <div class="border-t border-gray-100 pt-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm text-gray-600">Data e Hora:</span>
-                        <span
-                            class="text-sm font-medium text-gray-900"><?= formatarDataHoraBR($agendamento['data_agendamento']) ?></span>
+                            <div class="border-t border-gray-100 pt-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-600">Data e Hora:</span>
+                                    <span
+                                        class="text-sm font-medium text-gray-900"><?= formatarDataHoraBR($agendamento['data_agendamento']) ?></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Tipo:</span>
+                                    <span
+                                        class="text-sm font-medium text-gray-900"><?= htmlspecialchars($agendamento['tipo']) ?></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="flex justify-between space-x-2">
+                                <?php if ($agendamento['status'] === 'pendente'): ?>
+                                    <a href="confirmar.php?id=<?= $agendamento['id'] ?>"
+                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
+                                        title="Confirmar">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
+                                    <a href="realizar.php?id=<?= $agendamento['id'] ?>"
+                                        class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
+                                        title="Marcar como realizado">
+                                        <i class="fas fa-check-double"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <a href="editar.php?id=<?= $agendamento['id'] ?>"
+                                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
+                                    title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
+                                    <a href="cancelar.php?id=<?= $agendamento['id'] ?>"
+                                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
+                                        title="Cancelar" onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="excluir.php?id=<?= $agendamento['id'] ?>"
+                                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
+                                        title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este agendamento?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Tipo:</span>
-                        <span
-                            class="text-sm font-medium text-gray-900"><?= htmlspecialchars($agendamento['tipo']) ?></span>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
-
-            <div class="bg-gray-50 px-5 py-3">
-                <div class="flex justify-between space-x-2">
-                    <?php if ($agendamento['status'] === 'pendente'): ?>
-                    <a href="confirmar.php?id=<?= $agendamento['id'] ?>"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
-                        title="Confirmar">
-                        <i class="fas fa-check-circle"></i>
-                    </a>
-                    <?php endif; ?>
-
-                    <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
-                    <a href="realizar.php?id=<?= $agendamento['id'] ?>"
-                        class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
-                        title="Marcar como realizado">
-                        <i class="fas fa-check-double"></i>
-                    </a>
-                    <?php endif; ?>
-
-                    <a href="editar.php?id=<?= $agendamento['id'] ?>"
-                        class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
-                        title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </a>
-
-                    <?php if ($agendamento['status'] === 'pendente' || $agendamento['status'] === 'confirmado'): ?>
-                    <a href="cancelar.php?id=<?= $agendamento['id'] ?>"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
-                        title="Cancelar" onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
-                        <i class="fas fa-times-circle"></i>
-                    </a>
-                    <?php else: ?>
-                    <a href="excluir.php?id=<?= $agendamento['id'] ?>"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200"
-                        title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este agendamento?')">
-                        <i class="fas fa-trash-alt"></i>
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
@@ -545,21 +545,21 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 <script>
-// Configuração do datepicker no formato BR
-flatpickr('.datepicker', {
-    dateFormat: 'd/m/Y',
-    locale: 'pt',
-    allowInput: true,
-    disableMobile: true // Melhora a experiência em dispositivos móveis
-});
+    // Configuração do datepicker no formato BR
+    flatpickr('.datepicker', {
+        dateFormat: 'd/m/Y',
+        locale: 'pt',
+        allowInput: true,
+        disableMobile: true // Melhora a experiência em dispositivos móveis
+    });
 
-// Atualizar a página quando o status for alterado
-document.getElementById('status').addEventListener('change', function() {
-    this.form.submit();
-});
+    // Atualizar a página quando o status for alterado
+    document.getElementById('status').addEventListener('change', function() {
+        this.form.submit();
+    });
 
-// Atualizar a página quando a visualização for alterada
-document.getElementById('view').addEventListener('change', function() {
-    this.form.submit();
-});
+    // Atualizar a página quando a visualização for alterada
+    document.getElementById('view').addEventListener('change', function() {
+        this.form.submit();
+    });
 </script>
