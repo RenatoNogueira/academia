@@ -80,7 +80,9 @@ if (!empty($cliente['data_nascimento'])) {
     $idade = $hoje->diff($dataNasc)->y;
 }
 
-require_once '../../lib/tcpdf/tcpdf.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+
 if (!class_exists('TCPDF')) {
     die('Erro: A classe TCPDF não foi carregada corretamente. Verifique se o arquivo tcpdf.php está no caminho correto.');
 }
@@ -367,7 +369,7 @@ if ($tipoRelatorio === 'individual' && $avaliacao) {
                         false,              // Hidden
                         false,              // FitOnPage
                         false,              // AltText
-                        false,              // AltImgs
+                        array(),            // AltImgs
                     );
 
                     // Add space after image

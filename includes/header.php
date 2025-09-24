@@ -1,3 +1,40 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Inicialização
+$notifications = [];
+$unreadCount = 0;
+
+if (isset($db) && isset($_SESSION['user_id'])) {
+    $userId = (int) $_SESSION['user_id'];
+
+    try {
+        // Buscar próximos agendamentos do usuário
+        $stmt = $db->prepare("
+            SELECT ag.id, ag.data_agendamento, ag.tipo, ag.status, c.nome as cliente_nome
+            FROM agendamentos ag
+            JOIN clientes c ON ag.cliente_id = c.id
+            WHERE ag.usuario_id = :userId
+              AND ag.data_agendamento >= datetime('now')
+            ORDER BY ag.data_agendamento ASC
+            LIMIT 10
+        ");
+        $stmt->bindValue(':userId', $userId, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $notifications[] = $row;
+        }
+
+        $unreadCount = count($notifications);
+
+    } catch (Exception $e) {
+        error_log("Erro ao buscar notificações: " . $e->getMessage());
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-BR" class="light">
 
@@ -360,6 +397,48 @@
             </nav>
 
             <div class="flex items-center gap-4">
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button id="notification-bell"
+                        class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-700 focus:outline-none"
+                        aria-label="Notificações">
+                        <i class="fas fa-bell text-gray-600 dark:text-gray-300 text-lg"></i>
+                        <?php if ($unreadCount > 0): ?>
+                        <span
+                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            <?= $unreadCount ?>
+                        </span>
+                        <?php endif; ?>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div id="notification-dropdown"
+                        class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-md shadow-lg z-50">
+                        <ul class="max-h-64 overflow-y-auto divide-y divide-gray-200 dark:divide-dark-700">
+                            <?php if (!empty($notifications)): ?>
+                            <?php foreach ($notifications as $noti): ?>
+                            <li>
+                                <a href="/DRM/pages/agendamentos/listar.php?id=<?php echo $noti['id']; ?>"
+                                    class="block p-3 hover:bg-gray-50 dark:hover:bg-dark-700">
+                                    <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <?= htmlspecialchars($noti['cliente_nome']) ?> -
+                                        <?= htmlspecialchars($noti['tipo']) ?>
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        <?= date('d/m/Y H:i', strtotime($noti['data_agendamento'])) ?>
+                                        - Status: <?= $noti['status'] ?>
+                                    </p>
+                                </a>
+                            </li>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <li class="p-3 text-sm text-gray-500 dark:text-gray-400">Nenhuma notificação</li>
+                            <?php endif; ?>
+                        </ul>
+
+                    </div>
+                </div>
+
                 <button id="themeToggle"
                     class="p-2 rounded-full focus:outline-none hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
                     aria-label="Alternar tema">
@@ -373,7 +452,6 @@
                         class="flex items-center space-x-2 focus:outline-none p-1 rounded-md hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
                         aria-label="Menu do usuário">
                         <?php
-                        // Verifica se o usuário tem uma foto no banco de dados
                         $fotoUsuario = '';
                         if (isset($_SESSION['user_id'])) {
                             $stmt = $db->prepare("SELECT foto FROM usuarios WHERE id = :id");
@@ -385,12 +463,10 @@
                         ?>
 
                         <?php if (!empty($fotoUsuario)): ?>
-                        <!-- Mostra a foto do usuário em miniatura circular -->
                         <img src="<?= BASE_URL ?>/../uploads/<?= htmlspecialchars($fotoUsuario) ?>"
                             alt="Foto do usuário"
                             class="h-8 w-8 rounded-full object-cover border-2 border-gray-200 dark:border-dark-600">
                         <?php else: ?>
-                        <!-- Mostra um ícone padrão se não tiver foto -->
                         <div
                             class="h-8 w-8 bg-gray-100 dark:bg-dark-700 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-dark-600">
                             <i class="fas fa-user text-gray-400 dark:text-gray-500"></i>
@@ -437,7 +513,11 @@
             </a>
         </nav>
     </header>
-
+    <script>
+    document.getElementById('notification-bell')?.addEventListener('click', () => {
+        document.getElementById('notification-dropdown')?.classList.toggle('hidden');
+    });
+    </script>
     <script>
     // Toggle do menu hambúrguer com animação
     document.getElementById('menu-toggle').addEventListener('click', function() {

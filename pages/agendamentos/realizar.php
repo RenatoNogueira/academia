@@ -45,11 +45,12 @@ if ($stmt->execute()) {
     // Se for uma avaliação física, redirecionar para criar avaliação
     if ($agendamento['tipo'] === 'Avaliação Física') {
         // Verificar se já existe uma avaliação para este agendamento
-        $stmt = $db->prepare("
-            SELECT id FROM avaliacoes
-            WHERE agendamento_id = :agendamento_id
-        ");
-        $stmt->bindValue(':agendamento_id', $agendamentoId);
+$stmt = $db->prepare("
+    SELECT id FROM avaliacoes
+    WHERE cliente_id = :cliente_id
+");
+$stmt->bindValue(':cliente_id', $agendamento['cliente_id']);
+
         $result = $stmt->execute();
 
         if (!$result->fetchArray()) {

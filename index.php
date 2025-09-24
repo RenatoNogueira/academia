@@ -5,7 +5,7 @@ require_once 'includes/db.php';
 
 if (!isLoggedIn()) {
     header('Location: login.php');
-    exit();
+    exit(); 
 }
 
 // Obter estatísticas para o dashboard
@@ -30,15 +30,14 @@ while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
 // Obter próximos agendamentos
 $agendamentosProximos = [];
 $result = $db->query("
-    SELECT ag.*, c.nome as cliente_nome
+    SELECT ag.*, c.nome AS cliente_nome
     FROM agendamentos ag
     JOIN clientes c ON ag.cliente_id = c.id
     WHERE ag.usuario_id = " . getCurrentUserId() . "
-    AND ag.status = 'pendente'
-    AND ag.data_agendamento >= datetime('now')
     ORDER BY ag.data_agendamento ASC
-    LIMIT 5
 ");
+
+
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
     $agendamentosProximos[] = $row;
 }
@@ -150,10 +149,10 @@ $dataAtual = strftime('%A, %d de %B de %Y');
         </div>
     </div>
 
-    <!-- Seção de Agendamentos Próximos -->
+    <!-- Seção de Agendamentos -->
     <div class="card bg-white p-6 mb-8 dark:bg-gray-800">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold dark:text-dark section-title">Próximos Agendamentos</h2>
+            <h2 class="text-xl font-semibold dark:text-dark section-title">Agendamentos</h2>
             <a href="pages/agendamentos/listar.php" class="btn btn-primary flex items-center text-sm">
                 Ver todos <i class="fas fa-arrow-right ml-2 text-xs"></i>
             </a>
@@ -182,10 +181,25 @@ $dataAtual = strftime('%A, %d de %B de %Y');
                             <?php echo htmlspecialchars($agendamento['tipo']); ?>
                         </td>
                         <td>
+                            <?php if ($agendamento['status'] === 'pendente'): ?>
                             <span
                                 class="status-badge bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                Pendente
+                            </span>
+                            <?php elseif ($agendamento['status'] === 'confirmado'): ?>
+                            <span
+                                class="status-badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                Confirmado
+                            </span>
+                            <?php elseif ($agendamento['status'] === 'cancelado'): ?>
+                            <span class="status-badge bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+                                Cancelado
+                            </span>
+                            <?php else: ?>
+                            <span class="status-badge bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300">
                                 <?php echo htmlspecialchars($agendamento['status']); ?>
                             </span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -193,6 +207,7 @@ $dataAtual = strftime('%A, %d de %B de %Y');
             </table>
         </div>
     </div>
+
 
     <!-- Seção de Avaliações Recentes -->
     <div class="card bg-white p-6 dark:bg-gray-800">
